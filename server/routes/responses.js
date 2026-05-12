@@ -1,0 +1,72 @@
+import { Router } from 'express';
+import { db } from '../db/index.js';
+import { polls, responses, answers } from '../db/schema.js';
+import { eq } from 'drizzle-orm';
+
+const router = Router();
+
+// ==========================================
+// POST /api/responses - Submit a poll response
+// ==========================================
+router.post('/', async (req, res) => {
+  const { pollId, answers: submittedAnswers } = req.body;
+
+  try {
+    // 1. Validate the Poll exists and is active
+    const [poll] = await db.select().from(polls).where(eq(polls.id, pollId));
+    
+    if (!poll) {
+      return res.status(404).json({ error: 'Poll not found' });
+    }
+    
+    if (!poll.isActive) {
+      return res.status(403).json({ error: 'This poll is closed and no longer accepting responses' });
+    }
+
+    if (poll.expiresAt && new Date() > new Date(poll.expiresAt)) {
+      return res.status(403).json({ error: 'This poll has expired' });
+    }
+
+    // 2. Identify the respondent
+    // If the poll requires authentication (!isAnonymous), check session
+    if (!poll.isAnonymous && !req.session.userId) {
+      return res.status(401).json({ error: 'You must be logged in to vote on this poll' });
+    }
+
+    const respondentId = req.session.userId || null;
+    
+    // Grab the IP address (Express handles proxy IPs if configured)
+    const ipAddress = req.ip || req.socket.remoteAddress;
+
+    // 3. Save Response and Answers using a Database Transaction
+    // If inserting answers fails, the response record is deleted automatically.
+    await db.transaction(async (tx) => {
+      // Create the main response record
+      const [responseRecord] = await tx.insert(responses).values({
+        pollId: poll.id,
+        respondentId,
+        ipAddress,
+      }).returning();
+
+      // Map the incoming answers to match the database schema
+      const answerRows = submittedAnswers.map(ans => ({
+        responseId: responseRecord.id,
+        questionId: ans.questionId,
+        optionId:   ans.optionId || null,
+        textAnswer: ans.textAnswer || null,
+      }));
+
+      // Insert all answers in a single bulk operation for performance
+      if (answerRows.length > 0) {
+        await tx.insert(answers).values(answerRows);
+      }
+      
+      res.status(201).json({ success: true, responseId: responseRecord.id });
+    });
+  } catch (error) {
+    console.error('Error submitting response:', error);
+    res.status(500).json({ error: 'Failed to submit response' });
+  }
+});
+
+export default router;

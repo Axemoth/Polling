@@ -1,0 +1,21 @@
+# Dependency directories
+node_modules/
+server/node_modules/
+client/node_modules/
+
+# Environment variables
+.env
+*.env.local
+
+# Build outputs
+dist/
+build/
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Drizzle cache
+.drizzle/
