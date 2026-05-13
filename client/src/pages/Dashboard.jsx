@@ -51,13 +51,13 @@ const Dashboard = () => {
       <div className="mb-12 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-4xl font-black tracking-tight text-white flex items-center gap-3">
-            <Grid className="h-8 w-8 text-indigo-500" />
+            <Grid className="h-8 w-8 text-cyan-500" />
             Control Center
           </h1>
           <p className="text-zinc-500 mt-1">Monitor and manage your interactive polls in real-time.</p>
         </div>
         <Link to="/create">
-          <Button className="bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/20 px-6 h-12 text-base font-bold">
+          <Button className="bg-cyan-600 hover:bg-cyan-700 shadow-lg shadow-cyan-600/20 px-6 h-12 text-base font-bold">
             <Plus className="mr-2 h-5 w-5" />
             New Campaign
           </Button>
@@ -72,7 +72,7 @@ const Dashboard = () => {
         </div>
       ) : polls.length === 0 ? (
         <Card className="flex flex-col items-center justify-center border-dashed border-zinc-800 bg-transparent py-24 text-center">
-          <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-indigo-600/10 text-indigo-500 ring-1 ring-indigo-500/20">
+          <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-cyan-600/10 text-cyan-500 ring-1 ring-cyan-500/20">
             <BarChart className="h-10 w-10" />
           </div>
           <CardTitle className="text-2xl font-bold text-white mb-2">The stage is empty</CardTitle>
@@ -92,10 +92,10 @@ const Dashboard = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.05 }}
             >
-              <Card className="glass-card group flex flex-col h-full border-zinc-800 hover:border-indigo-500/50 transition-all duration-300">
+              <Card className="glass-card group flex flex-col h-full border-zinc-800 hover:border-cyan-500/50 transition-all duration-300">
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between mb-4">
-                    <Badge className={poll.isActive ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-zinc-800 text-zinc-500"}>
+                    <Badge className={poll.isActive ? "bg-cyan-500/10 text-cyan-400 border-cyan-500/25" : "bg-zinc-800 text-zinc-500"}>
                       {poll.isActive ? "Active Now" : "Closed"}
                     </Badge>
                     <Badge variant="outline" className="border-white/5 bg-white/[0.02] text-zinc-500 text-[9px] uppercase tracking-tighter">
@@ -106,7 +106,7 @@ const Dashboard = () => {
                       {new Date(poll.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                     </div>
                   </div>
-                  <CardTitle className="line-clamp-1 text-xl font-bold text-white group-hover:text-indigo-400 transition-colors">
+                  <CardTitle className="line-clamp-1 text-xl font-bold text-white group-hover:text-cyan-400 transition-colors">
                     {poll.title}
                   </CardTitle>
                   <CardDescription className="line-clamp-2 text-zinc-500 text-sm mt-1">
@@ -135,7 +135,7 @@ const Dashboard = () => {
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="h-10 w-10 shrink-0 text-zinc-600 hover:text-indigo-400 hover:bg-indigo-500/10" 
+                      className="h-10 w-10 shrink-0 text-zinc-600 hover:text-cyan-400 hover:bg-cyan-500/10" 
                       onClick={() => copyLink(poll.publicSlug)}
                     >
                       <Share2 className="h-4.5 w-4.5" />

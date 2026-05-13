@@ -17,7 +17,7 @@ const Navbar = () => {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-10">
           <Link to="/" className="flex items-center gap-2 text-xl font-bold tracking-tighter text-white">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-600">
               <BarChart className="h-5 w-5" />
             </div>
             PollPulse
@@ -49,7 +49,7 @@ const Navbar = () => {
 
         <div className="flex items-center gap-6">
           <div className="hidden sm:flex items-center gap-3 pr-4 border-r border-zinc-800">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-800 text-xs font-bold text-indigo-400">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-800 text-xs font-bold text-cyan-400">
               {user.name?.charAt(0).toUpperCase()}
             </div>
             <div className="flex flex-col">

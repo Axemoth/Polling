@@ -13,7 +13,7 @@
     --popover: 240 10% 4%;
     --popover-foreground: 240 10% 95%;
  
-    --primary: 247 100% 72%; /* #7c6eff */
+    --primary: 187 92% 46%; /* cyan-leaning, clean on dark */
     --primary-foreground: 0 0% 100%;
  
     --secondary: 240 5% 10%;
@@ -22,15 +22,15 @@
     --muted: 240 5% 15%;
     --muted-foreground: 240 5% 65%; /* #65636f */
  
-    --accent: 247 100% 72% / 10%;
-    --accent-foreground: 247 100% 72%;
+    --accent: 187 70% 50% / 12%;
+    --accent-foreground: 186 85% 72%;
  
     --destructive: 351 100% 65%; /* #ff4f6a */
     --destructive-foreground: 0 0% 100%;
  
     --border: 240 10% 12%;
     --input: 240 10% 12%;
-    --ring: 247 100% 72%;
+    --ring: 187 92% 46%;
  
     --radius: 12px;
 
@@ -45,7 +45,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary;
+    @apply bg-background text-foreground antialiased selection:bg-cyan-500/15 selection:text-cyan-100;
     font-family: var(--fb);
   }
   h1, h2, h3, h4, h5, h6 {
@@ -58,8 +58,8 @@
     position: fixed; 
     inset: 0;
     background-image:
-      linear-gradient(rgba(124,110,255,0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(124,110,255,0.02) 1px, transparent 1px);
+      linear-gradient(rgba(6, 182, 212, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(113, 113, 122, 0.06) 1px, transparent 1px);
     background-size: 52px 52px;
     pointer-events: none; 
     z-index: 0;
@@ -80,7 +80,7 @@
 
 /* Custom Btn Glow */
 .btn-primary {
-  @apply bg-primary text-white shadow-[0_0_20px_rgba(124,110,255,0.28)] hover:shadow-[0_0_30px_rgba(124,110,255,0.4)] transition-all;
+  @apply bg-primary text-white shadow-[0_0_24px_rgba(6,182,212,0.18)] hover:shadow-[0_0_32px_rgba(6,182,212,0.28)] transition-all;
 }
 
 /* Responsive Grid */

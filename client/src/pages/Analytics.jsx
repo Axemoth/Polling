@@ -17,9 +17,19 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
-import { BarChart } from "@/components/evilcharts/charts";
+import { BarChart, PieChart } from "@/components/evilcharts/charts";
 
 const API_ORIGIN = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+
+/** Per-sector gradients for pie (cyan / teal / sky — no purple) */
+const PIE_SECTOR_PALETTES = [
+  { light: ["#22d3ee", "#0e7490"], dark: ["#22d3ee", "#0891b2"] },
+  { light: ["#2dd4bf", "#0f766e"], dark: ["#2dd4bf", "#14b8a6"] },
+  { light: ["#38bdf8", "#0369a1"], dark: ["#38bdf8", "#0284c7"] },
+  { light: ["#5eead4", "#115e59"], dark: ["#5eead4", "#0d9488"] },
+  { light: ["#a5f3fc", "#155e75"], dark: ["#a5f3fc", "#0e7490"] },
+  { light: ["#94a3b8", "#334155"], dark: ["#94a3b8", "#475569"] },
+];
 
 const Analytics = () => {
   const { id } = useParams();
@@ -77,14 +87,14 @@ const Analytics = () => {
 
   if (loading) return (
     <div className="flex h-screen items-center justify-center bg-[#060608]">
-      <div className="h-12 w-12 animate-spin rounded-full border-4 border-indigo-500/20 border-t-indigo-500" />
+      <div className="h-12 w-12 animate-spin rounded-full border-4 border-cyan-500/20 border-t-cyan-400" />
     </div>
   );
 
   if (!poll || !data) return (
     <div className="flex h-screen flex-col items-center justify-center bg-[#060608] text-[#eeedf5]">
       <h2 className="text-2xl font-bold">Analytics not available</h2>
-      <Link to="/" className="mt-4 text-indigo-400 hover:underline">Return to Dashboard</Link>
+      <Link to="/" className="mt-4 text-cyan-400 hover:text-cyan-300 hover:underline">Return to Dashboard</Link>
     </div>
   );
 
@@ -126,26 +136,36 @@ const Analytics = () => {
     const pct = qt > 0 ? Math.round((best.count / qt) * 100) : 0;
     return { ...best, questionTotal: qt, pct };
   };
-  const getChartProps = (question) => {
+  const buildBarChartProps = (question) => {
     const chartData = question.options.map((opt) => {
       const countObj = data.optionCounts.find((oc) => oc.optionId === opt.id);
-      return {
-        label: opt.text,
-        votes: countObj ? countObj.count : 0,
-      };
+      return { label: opt.text, votes: countObj ? countObj.count : 0 };
     });
-
     const chartConfig = {
       votes: {
         label: "Votes",
         colors: {
-          light: ["#818cf8"],
-          dark: ["#818cf8"],
+          light: ["#22d3ee", "#0891b2"],
+          dark: ["#22d3ee", "#06b6d4"],
         },
       },
     };
-
     return { chartData, chartConfig };
+  };
+
+  const buildPieChartPayload = (question) => {
+    const chartConfig = {};
+    const pieData = question.options.map((opt, i) => {
+      const countObj = data.optionCounts.find((oc) => oc.optionId === opt.id);
+      const votes = countObj ? countObj.count : 0;
+      const segmentKey = opt.id;
+      chartConfig[segmentKey] = {
+        label: opt.text,
+        colors: PIE_SECTOR_PALETTES[i % PIE_SECTOR_PALETTES.length],
+      };
+      return { segmentKey, label: opt.text, votes };
+    });
+    return { pieData, pieChartConfig: chartConfig };
   };
 
   return (
@@ -165,14 +185,14 @@ const Analytics = () => {
                 <Badge
                   className={
                     liveConnected
-                      ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 gap-2 pr-2.5'
+                      ? 'bg-cyan-500/10 text-cyan-300 border-cyan-500/25 gap-2 pr-2.5'
                       : 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20'
                   }
                 >
                   {liveConnected && (
                     <span className="relative flex h-2 w-2 shrink-0">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                      <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400 opacity-75" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-cyan-400" />
                     </span>
                   )}
                   {liveConnected ? 'Live broadcast' : 'Connecting…'}
@@ -217,8 +237,8 @@ const Analytics = () => {
             label="Total responses"
             value={data.totalResponses}
             hint="Unique submissions to this poll"
-            icon={<Users className="h-5 w-5 text-indigo-400" />}
-            color="text-indigo-400"
+            icon={<Users className="h-5 w-5 text-cyan-400" />}
+            color="text-cyan-400"
           />
           <StatsCard
             label="Questions"
@@ -255,7 +275,7 @@ const Analytics = () => {
               </p>
             ) : (
               <>
-                <ul className="list-inside list-disc space-y-2 marker:text-indigo-500">
+                <ul className="list-inside list-disc space-y-2 marker:text-cyan-500">
                   <li>
                     <span className="font-semibold text-white">{data.totalResponses}</span>{" "}
                     {data.totalResponses === 1 ? "person has" : "people have"} submitted a response (each submission is counted once).
@@ -275,7 +295,7 @@ const Analytics = () => {
                     </li>
                   )}
                   {questionCount > 0 && allQuestionsMatchResponses && (
-                    <li className="text-emerald-400/90">
+                    <li className="text-teal-400/95">
                       Every question received the same number of answers as you have submissions—consistent with a full answer set on each question.
                     </li>
                   )}
@@ -348,16 +368,19 @@ const Analytics = () => {
         <div className="mt-14 space-y-10">
           <div>
             <h2 className="text-2xl font-black tracking-tight text-white flex items-center gap-3">
-              <BarChartIcon className="h-6 w-6 text-indigo-500" />
+              <BarChartIcon className="h-6 w-6 text-cyan-500" />
               Response detail by question
             </h2>
             <p className="mt-2 max-w-2xl text-sm text-zinc-500">
-              Bar charts and per-option counts. Percentages are within each question (they add to 100% per question).
+              Bar comparison, donut share, and per-option counts. Percentages use each question’s own answer total.
             </p>
           </div>
           <div className="grid gap-8">
             {poll.questions.map((q, idx) => {
-              const { chartData, chartConfig } = getChartProps(q);
+              const { chartData, chartConfig } = buildBarChartProps(q);
+              const { pieData, pieChartConfig } = buildPieChartPayload(q);
+              const qTotal = answerTotalsByQuestionMap[q.id] ?? 0;
+              const hasPieData = qTotal > 0;
               return (
               <motion.div
                 key={q.id}
@@ -370,53 +393,93 @@ const Analytics = () => {
                     <div className="flex items-start justify-between">
                       <div>
                         <div className="flex items-center gap-3 mb-2">
-                          <span className="flex h-6 w-6 items-center justify-center rounded-md bg-indigo-600 text-[10px] font-bold text-white uppercase">Q{idx + 1}</span>
+                          <span className="flex h-6 w-6 items-center justify-center rounded-md bg-cyan-600 text-[10px] font-bold text-white uppercase">Q{idx + 1}</span>
                           <CardTitle className="text-xl font-bold text-white">{q.text}</CardTitle>
                         </div>
                         <CardDescription className="text-zinc-500">
                           {q.isMandatory ? "Required" : "Optional"} ·{" "}
-                          {answerTotalsByQuestionMap[q.id] ?? 0} answers on this question
+                          {qTotal} answers on this question
                         </CardDescription>
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="p-8">
-                    <div className="grid gap-12 lg:grid-cols-2">
-                      {/* CHART */}
-                      <div className="h-[300px] w-full flex items-center justify-center bg-zinc-900/50 rounded-2xl border border-white/5 p-4">
-                        <BarChart 
-                          data={chartData} 
-                          chartConfig={chartConfig}
-                          xDataKey="label"
-                          yDataKey="votes"
-                          hideLegend
-                        />
+                  <CardContent className="p-6 sm:p-8">
+                    <div className="grid gap-10 lg:grid-cols-2">
+                      <div>
+                        <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                          Responses by option
+                        </p>
+                        <div className="h-[280px] w-full rounded-2xl border border-white/5 bg-zinc-900/40 p-3 sm:h-[300px] sm:p-4">
+                          <BarChart
+                            data={chartData}
+                            chartConfig={chartConfig}
+                            xDataKey="label"
+                            yDataKey="votes"
+                            hideLegend
+                            barVariant="gradient"
+                            barRadius={8}
+                            enableHoverHighlight
+                            backgroundVariant="dots"
+                            yAxisProps={{ width: 36 }}
+                          />
+                        </div>
                       </div>
+                      <div>
+                        <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                          Share of this question
+                        </p>
+                        <div className="flex h-[280px] w-full items-center justify-center rounded-2xl border border-white/5 bg-zinc-900/40 p-3 sm:h-[300px] sm:p-4">
+                          {hasPieData ? (
+                            <PieChart
+                              className="mx-auto aspect-square h-full max-h-[280px] w-full max-w-[280px]"
+                              data={pieData}
+                              dataKey="votes"
+                              nameKey="segmentKey"
+                              chartConfig={pieChartConfig}
+                              innerRadius="52%"
+                              outerRadius="88%"
+                              paddingAngle={2}
+                              cornerRadius={4}
+                              showLabels={pieData.length <= 6}
+                              labelKey="votes"
+                              hideLegend={false}
+                              legendVariant="circle"
+                            />
+                          ) : (
+                            <p className="px-4 text-center text-sm text-zinc-500">
+                              No votes on this question yet.
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
 
-                      {/* DATA TABLE */}
+                    <div className="mt-10 border-t border-white/5 pt-8">
+                      <h4 className="mb-6 text-xs font-bold uppercase tracking-widest text-zinc-500">
+                        Option breakdown
+                      </h4>
                       <div className="space-y-4">
-                        <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-6">Vote Distribution</h4>
                         {q.options.map((opt) => {
                           const countObj = data.optionCounts.find((oc) => oc.optionId === opt.id);
                           const count = countObj ? countObj.count : 0;
                           const questionVoteTotal = answerTotalsByQuestionMap[q.id] ?? 0;
                           const percent =
                             questionVoteTotal > 0 ? Math.round((count / questionVoteTotal) * 100) : 0;
-                          
+
                           return (
                             <div key={opt.id} className="space-y-2">
                               <div className="flex items-center justify-between text-sm">
                                 <span className="text-zinc-300 font-medium">{opt.text}</span>
                                 <div className="flex items-center gap-3">
                                   <span className="text-zinc-500">{count} votes</span>
-                                  <span className="text-white font-bold">{percent}%</span>
+                                  <span className="text-white font-bold tabular-nums">{percent}%</span>
                                 </div>
                               </div>
-                              <div className="h-2 w-full bg-zinc-800 rounded-full overflow-hidden">
-                                <motion.div 
+                              <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-800/80">
+                                <motion.div
                                   initial={{ width: 0 }}
                                   animate={{ width: `${percent}%` }}
-                                  className="h-full bg-indigo-500"
+                                  className="h-full rounded-full bg-gradient-to-r from-cyan-600 to-teal-500"
                                 />
                               </div>
                             </div>
@@ -434,7 +497,7 @@ const Analytics = () => {
         {data.textResults?.length > 0 && (
           <div className="mt-20">
             <h2 className="text-2xl font-black tracking-tight text-white flex items-center gap-3 mb-8">
-              <MessageSquare className="h-6 w-6 text-purple-500" />
+              <MessageSquare className="h-6 w-6 text-teal-400" />
               Direct Feedback
             </h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

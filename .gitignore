@@ -19,3 +19,6 @@ Thumbs.db
 
 # Drizzle cache
 .drizzle/
+
+# Local-only documentation (not committed)
+FRONTEND_FLOW.local.md

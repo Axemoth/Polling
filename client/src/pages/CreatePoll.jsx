@@ -109,7 +109,7 @@ const CreatePoll = () => {
         {/* HEADER AREA */}
         <div className="mb-12 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <div className="inline-flex items-center rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-400 mb-4">
+            <div className="inline-flex items-center rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-medium text-cyan-400 mb-4">
               <Sparkles className="mr-2 h-3 w-3" />
               Creator Studio
             </div>
@@ -120,7 +120,7 @@ const CreatePoll = () => {
             <Button type="button" variant="ghost" className="border-white/5 text-zinc-400 hover:text-white" onClick={() => navigate('/')}>
               Discard
             </Button>
-            <Button type="submit" className="bg-indigo-600 font-bold text-white hover:bg-indigo-700 shadow-lg shadow-indigo-600/20 px-8 h-12" disabled={loading}>
+            <Button type="submit" className="bg-cyan-600 font-bold text-white hover:bg-cyan-700 shadow-lg shadow-cyan-600/20 px-8 h-12" disabled={loading}>
               {loading ? "Launching..." : "Launch Poll"}
               <Send className="ml-2 h-4 w-4" />
             </Button>
@@ -134,7 +134,7 @@ const CreatePoll = () => {
             <Card className="glass-card border-white/5">
               <CardHeader>
                 <div className="flex items-center gap-2 mb-2">
-                  <Layout className="h-4 w-4 text-indigo-500" />
+                  <Layout className="h-4 w-4 text-cyan-500" />
                   <CardTitle className="text-lg font-bold text-white uppercase tracking-wider text-sm">General Information</CardTitle>
                 </div>
               </CardHeader>
@@ -143,7 +143,7 @@ const CreatePoll = () => {
                   <Label className="text-zinc-400 text-xs font-bold uppercase tracking-widest">Poll Title</Label>
                   <Input 
                     placeholder="e.g. Q3 Engineering Retrospective" 
-                    className="bg-zinc-900/50 border-white/5 text-white h-12 text-lg focus:border-indigo-500"
+                    className="bg-zinc-900/50 border-white/5 text-white h-12 text-lg focus:border-cyan-500"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     required
@@ -153,7 +153,7 @@ const CreatePoll = () => {
                   <Label className="text-zinc-400 text-xs font-bold uppercase tracking-widest">Context / Description</Label>
                   <Textarea 
                     placeholder="Provide some background for your respondents..." 
-                    className="bg-zinc-900/50 border-white/5 text-white min-h-[100px] focus:border-indigo-500"
+                    className="bg-zinc-900/50 border-white/5 text-white min-h-[100px] focus:border-cyan-500"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                   />
@@ -178,7 +178,7 @@ const CreatePoll = () => {
                     <Card className="glass-card border-white/5 overflow-hidden">
                       <div className="flex items-center justify-between border-b border-white/5 bg-white/[0.02] px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <span className="flex h-6 w-6 items-center justify-center rounded-md bg-indigo-600 text-[10px] font-bold text-white uppercase">Q{idx + 1}</span>
+                          <span className="flex h-6 w-6 items-center justify-center rounded-md bg-cyan-600 text-[10px] font-bold text-white uppercase">Q{idx + 1}</span>
                           <Input 
                             placeholder="Type your question here..." 
                             className="w-[300px] sm:w-[400px] bg-transparent border-none text-white font-bold placeholder:text-zinc-600 focus-visible:ring-0"
@@ -206,7 +206,7 @@ const CreatePoll = () => {
                               </div>
                               <Input 
                                 placeholder={`Option ${optIdx + 1}`}
-                                className="bg-zinc-900/30 border-white/5 text-white h-10 focus:border-indigo-500/50"
+                                className="bg-zinc-900/30 border-white/5 text-white h-10 focus:border-cyan-500/50"
                                 value={opt}
                                 onChange={(e) => updateOption(q.id, optIdx, e.target.value)}
                               />
@@ -227,7 +227,7 @@ const CreatePoll = () => {
                         <Button 
                           type="button" 
                           variant="ghost" 
-                          className="w-full border-dashed border-white/5 text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/5"
+                          className="w-full border-dashed border-white/5 text-zinc-500 hover:text-cyan-400 hover:bg-cyan-500/5"
                           onClick={() => addOption(q.id)}
                         >
                           <Plus className="mr-2 h-4 w-4" />
@@ -242,7 +242,7 @@ const CreatePoll = () => {
               <Button 
                 type="button" 
                 variant="outline" 
-                className="w-full h-14 border-dashed border-indigo-500/20 bg-indigo-500/[0.02] text-indigo-400 hover:bg-indigo-500/5 hover:border-indigo-500/40 text-base font-bold"
+                className="w-full h-14 border-dashed border-cyan-500/20 bg-cyan-500/[0.02] text-cyan-400 hover:bg-cyan-500/5 hover:border-cyan-500/40 text-base font-bold"
                 onClick={addQuestion}
               >
                 <Plus className="mr-2 h-5 w-5" />
@@ -253,8 +253,8 @@ const CreatePoll = () => {
 
           {/* SIDEBAR: tip first so it is never covered by settings; no sticky overlap */}
           <div className="flex flex-col gap-6">
-            <div className="rounded-2xl border border-indigo-500/10 bg-indigo-500/[0.02] p-6">
-              <div className="flex items-center gap-2 mb-3 text-indigo-400">
+            <div className="rounded-2xl border border-cyan-500/10 bg-cyan-500/[0.02] p-6">
+              <div className="flex items-center gap-2 mb-3 text-cyan-400">
                 <HelpCircle className="h-4 w-4" />
                 <span className="text-xs font-bold uppercase tracking-widest">Creator Tip</span>
               </div>
@@ -308,7 +308,7 @@ const CreatePoll = () => {
                    </div>
                 </div>
 
-                <Button type="submit" disabled={loading} className="w-full bg-emerald-600 hover:bg-emerald-700 font-bold text-white shadow-lg shadow-emerald-900/20 h-11">
+                <Button type="submit" disabled={loading} className="w-full bg-cyan-600 hover:bg-cyan-500 font-bold text-white shadow-lg shadow-cyan-900/20 h-11">
                   {loading ? "Launching..." : "Launch Campaign"}
                 </Button>
               </CardContent>

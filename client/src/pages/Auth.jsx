@@ -61,8 +61,8 @@ const Auth = () => {
   return (
     <div className="relative flex min-h-[calc(100vh-64px)] items-center justify-center overflow-hidden px-4 py-20">
       {/* Background Decorative Elements */}
-      <div className="absolute top-[-10%] left-[-10%] h-[500px] w-[500px] rounded-full bg-indigo-600/10 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] h-[400px] w-[400px] rounded-full bg-emerald-600/5 blur-[100px] pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] h-[500px] w-[500px] rounded-full bg-cyan-600/10 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] h-[400px] w-[400px] rounded-full bg-zinc-600/10 blur-[100px] pointer-events-none" />
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
@@ -70,7 +70,7 @@ const Auth = () => {
         className="z-10 w-full max-w-[420px]"
       >
         <div className="mb-8 text-center">
-           <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-indigo-400 mb-4">
+           <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-cyan-400 mb-4">
              <Sparkles className="h-3 w-3" />
              Voxly Platform
            </div>
@@ -113,7 +113,7 @@ const Auth = () => {
                       <User className="absolute left-3 top-3 h-4 w-4 text-zinc-600" />
                       <Input 
                         placeholder="Alex Johnson" 
-                        className="bg-zinc-900/50 border-white/5 pl-10 text-white h-11 focus:border-indigo-500/50"
+                        className="bg-zinc-900/50 border-white/5 pl-10 text-white h-11 focus:border-cyan-500/50"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required={!isLogin}
@@ -130,7 +130,7 @@ const Auth = () => {
                   <Input 
                     type="email" 
                     placeholder="you@company.com" 
-                    className="bg-zinc-900/50 border-white/5 pl-10 text-white h-11 focus:border-indigo-500/50"
+                    className="bg-zinc-900/50 border-white/5 pl-10 text-white h-11 focus:border-cyan-500/50"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -141,14 +141,14 @@ const Auth = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between ml-1">
                   <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Password</label>
-                  {isLogin && <button type="button" className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300">Forgot?</button>}
+                  {isLogin && <button type="button" className="text-[10px] font-bold text-cyan-400 hover:text-cyan-300">Forgot?</button>}
                 </div>
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-zinc-600" />
                   <Input 
                     type="password" 
                     placeholder="••••••••" 
-                    className="bg-zinc-900/50 border-white/5 pl-10 text-white h-11 focus:border-indigo-500/50"
+                    className="bg-zinc-900/50 border-white/5 pl-10 text-white h-11 focus:border-cyan-500/50"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -158,7 +158,7 @@ const Auth = () => {
 
               <Button 
                 type="submit" 
-                className="w-full bg-indigo-600 hover:bg-indigo-700 h-11 font-bold text-white shadow-lg shadow-indigo-600/20"
+                className="w-full bg-cyan-600 hover:bg-cyan-700 h-11 font-bold text-white shadow-lg shadow-cyan-600/20"
                 disabled={loading}
               >
                 {loading ? "Processing..." : (isLogin ? "Sign In" : "Create Account")}

@@ -12,7 +12,7 @@ function Switch({
       data-slot="switch"
       data-size={size}
       className={cn(
-        "peer group/switch relative inline-flex shrink-0 items-center rounded-full border border-white/10 transition-all outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 data-[size=default]:h-[20px] data-[size=default]:w-[36px] data-[size=sm]:h-[14px] data-[size=sm]:w-[24px] data-checked:bg-indigo-600 data-unchecked:bg-zinc-800 data-disabled:cursor-not-allowed data-disabled:opacity-50",
+        "peer group/switch relative inline-flex shrink-0 items-center rounded-full border border-white/10 transition-all outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/50 data-[size=default]:h-[20px] data-[size=default]:w-[36px] data-[size=sm]:h-[14px] data-[size=sm]:w-[24px] data-checked:bg-cyan-600 data-unchecked:bg-zinc-800 data-disabled:cursor-not-allowed data-disabled:opacity-50",
         className
       )}
       {...props}>

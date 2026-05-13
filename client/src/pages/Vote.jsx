@@ -79,7 +79,7 @@ const Vote = () => {
 
   if (loading) return (
     <div className="flex min-h-screen items-center justify-center bg-[#060608]">
-      <div className="h-12 w-12 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent" />
+      <div className="h-12 w-12 animate-spin rounded-full border-4 border-cyan-500 border-t-transparent" />
     </div>
   );
 
@@ -96,7 +96,7 @@ const Vote = () => {
     if (authLoading) {
       return (
         <div className="flex min-h-screen items-center justify-center bg-[#060608]">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent" />
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-cyan-500 border-t-transparent" />
         </div>
       );
     }
@@ -106,7 +106,7 @@ const Vote = () => {
         <div className="flex min-h-[calc(100vh-64px)] items-center justify-center bg-[#060608] px-4 py-12">
           <Card className="glass-card w-full max-w-md border-white/5">
             <CardHeader className="text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-500/10 text-indigo-400 ring-1 ring-indigo-500/20">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-cyan-500/10 text-cyan-400 ring-1 ring-cyan-500/20">
                 <ShieldCheck className="h-7 w-7" />
               </div>
               <CardTitle className="text-2xl font-black text-white">Sign in to vote</CardTitle>
@@ -116,7 +116,7 @@ const Vote = () => {
             </CardHeader>
             <CardContent className="flex flex-col gap-3">
               <Button
-                className="h-12 bg-indigo-600 font-bold text-white hover:bg-indigo-700"
+                className="h-12 bg-cyan-600 font-bold text-white hover:bg-cyan-700"
                 onClick={() => navigate(`/auth?next=${next}`)}
               >
                 Go to sign in
@@ -149,7 +149,7 @@ const Vote = () => {
         </p>
         <Button 
           onClick={() => navigate('/')} 
-          className="w-full bg-indigo-600 hover:bg-indigo-700 h-12 font-bold shadow-lg shadow-indigo-600/20"
+          className="w-full bg-cyan-600 hover:bg-cyan-700 h-12 font-bold shadow-lg shadow-cyan-600/20"
         >
           Back to Dashboard
         </Button>
@@ -163,7 +163,7 @@ const Vote = () => {
         
         {/* POLL HEADER */}
         <div className="mb-12 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-indigo-400 mb-6">
+          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-cyan-400 mb-6">
             <Zap className="h-3 w-3" />
             Live Campaign
           </div>
@@ -183,7 +183,7 @@ const Vote = () => {
               <Clock className="h-3 w-3" />
               {poll.expiresAt ? "Expiring Soon" : "Open Ended"}
             </div>
-            <div className="flex items-center gap-1.5 text-indigo-500">
+            <div className="flex items-center gap-1.5 text-cyan-500">
               <ShieldCheck className="h-3 w-3" />
               Secure
             </div>
@@ -200,7 +200,7 @@ const Vote = () => {
               transition={{ delay: idx * 0.1 }}
             >
               <div className="mb-6 flex items-center gap-4">
-                 <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-xs font-black text-white">
+                 <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-cyan-600 text-xs font-black text-white">
                    {idx + 1}
                  </span>
                  <h3 className="text-xl font-bold text-white tracking-tight">{q.text}</h3>
@@ -213,14 +213,14 @@ const Vote = () => {
                     onClick={() => handleSelection(q.id, option.id)}
                     className={`relative flex items-center justify-between overflow-hidden rounded-2xl border px-6 py-5 text-left transition-all duration-300 ${
                       selections[q.id] === option.id 
-                        ? 'border-indigo-500/50 bg-indigo-500/5 ring-1 ring-indigo-500/30' 
+                        ? 'border-cyan-500/50 bg-cyan-500/5 ring-1 ring-cyan-500/30' 
                         : 'border-white/5 bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/10'
                     }`}
                   >
                     <div className="flex items-center gap-4">
                       <div className={`flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all ${
                         selections[q.id] === option.id 
-                          ? 'border-indigo-500 bg-indigo-500 text-white scale-110' 
+                          ? 'border-cyan-500 bg-cyan-500 text-white scale-110' 
                           : 'border-zinc-800 bg-transparent'
                       }`}>
                         {selections[q.id] === option.id && <CheckCircle2 className="h-4 w-4" />}
@@ -233,7 +233,7 @@ const Vote = () => {
                     {selections[q.id] === option.id && (
                       <motion.div 
                         layoutId={`sparkle-${q.id}`}
-                        className="absolute right-[-20px] top-[-20px] h-20 w-20 bg-indigo-600/10 blur-xl pointer-events-none" 
+                        className="absolute right-[-20px] top-[-20px] h-20 w-20 bg-cyan-600/10 blur-xl pointer-events-none" 
                       />
                     )}
                   </button>
@@ -248,7 +248,7 @@ const Vote = () => {
           <Button 
             onClick={handleSubmit} 
             disabled={submitting}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 h-14 text-lg font-black shadow-xl shadow-indigo-600/30 gap-3 group"
+            className="w-full bg-cyan-600 hover:bg-cyan-700 h-14 text-lg font-black shadow-xl shadow-cyan-600/30 gap-3 group"
           >
             {submitting ? "Transmitting..." : "Submit Response"}
             <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />

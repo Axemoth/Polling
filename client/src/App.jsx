@@ -19,7 +19,7 @@ function ProtectedRoute({ children }) {
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-[#060608] font-sans antialiased">
+      <div className="min-h-screen bg-zinc-950 font-sans antialiased text-zinc-100">
         <Navbar />
         <Routes>
           {/* Public Routes */}
