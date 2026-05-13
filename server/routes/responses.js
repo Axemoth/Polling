@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { db } from '../db/index.js';
 import { polls, responses, answers } from '../db/schema.js';
 import { eq } from 'drizzle-orm';
+import { getIO } from '../lib/socket.js';
 
 const router = Router();
 
@@ -61,6 +62,14 @@ router.post('/', async (req, res) => {
         await tx.insert(answers).values(answerRows);
       }
       
+      // BROADCAST: Tell Socket.io to alert everyone in this poll's room 
+      // that a new vote has arrived.
+      const io = getIO();
+      io.to(`poll_${pollId}`).emit('new_vote', { 
+        pollId, 
+        responseId: responseRecord.id 
+      });
+
       res.status(201).json({ success: true, responseId: responseRecord.id });
     });
   } catch (error) {
