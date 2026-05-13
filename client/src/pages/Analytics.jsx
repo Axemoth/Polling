@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { io } from 'socket.io-client';
 import { api } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import { 
@@ -8,29 +9,27 @@ import {
   Users, 
   Clock, 
   Share2, 
-  Download,
   MessageSquare,
   PieChart as PieIcon,
-  Activity
+  Activity,
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
-import { BarChart, PieChart } from "@/components/evilcharts/charts";
+import { BarChart } from "@/components/evilcharts/charts";
+
+const API_ORIGIN = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
 const Analytics = () => {
   const { id } = useParams();
   const [poll, setPoll] = useState(null);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [liveConnected, setLiveConnected] = useState(false);
 
-  useEffect(() => {
-    fetchData();
-  }, [id]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [pollRes, analyticsRes] = await Promise.all([
         api.get(`/api/polls/details/${id}`),
@@ -44,7 +43,38 @@ const Analytics = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  const refetchAnalytics = useCallback(async () => {
+    try {
+      const { data: next } = await api.get(`/api/analytics/${id}`);
+      setData(next);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  useEffect(() => {
+    if (!id) return;
+    const socket = io(API_ORIGIN, { withCredentials: true, transports: ['websocket', 'polling'] });
+    socket.emit('join_poll', id);
+    socket.on('connect', () => setLiveConnected(true));
+    socket.on('disconnect', () => setLiveConnected(false));
+    const onNewVote = (payload) => {
+      if (payload?.pollId === id) void refetchAnalytics();
+    };
+    socket.on('new_vote', onNewVote);
+    return () => {
+      socket.emit('leave_poll', id);
+      socket.off('new_vote', onNewVote);
+      socket.disconnect();
+      setLiveConnected(false);
+    };
+  }, [id, refetchAnalytics]);
 
   if (loading) return (
     <div className="flex h-screen items-center justify-center bg-[#060608]">
@@ -96,19 +126,40 @@ const Analytics = () => {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl font-bold text-white">{poll.title}</h1>
-                <Badge className="bg-indigo-500/10 text-indigo-400 border-indigo-500/20">Live Results</Badge>
+                <Badge
+                  className={
+                    liveConnected
+                      ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 gap-2 pr-2.5'
+                      : 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20'
+                  }
+                >
+                  {liveConnected && (
+                    <span className="relative flex h-2 w-2 shrink-0">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+                    </span>
+                  )}
+                  {liveConnected ? 'Live broadcast' : 'Connecting…'}
+                </Badge>
               </div>
               <p className="text-xs text-zinc-500">Poll ID: {id}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="ghost" className="hidden sm:flex border-white/5 text-zinc-400 hover:text-white">
+            <Button
+              type="button"
+              variant="ghost"
+              className="border-white/5 text-zinc-400 hover:text-white"
+              onClick={() => {
+                const url = `${window.location.origin}/vote/${poll.publicSlug}`;
+                void navigator.clipboard.writeText(url).then(
+                  () => toast.success('Public vote link copied'),
+                  () => toast.error('Could not copy link')
+                );
+              }}
+            >
               <Share2 className="mr-2 h-4 w-4" />
-              Share
-            </Button>
-            <Button className="bg-indigo-600 font-bold text-white hover:bg-indigo-700">
-              <Download className="mr-2 h-4 w-4" />
-              Export PDF
+              Copy vote link
             </Button>
           </div>
         </div>

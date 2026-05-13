@@ -59,10 +59,11 @@ router.post('/', async (req, res) => {
       
       // BROADCAST: Tell Socket.io to alert everyone in this poll's room 
       // that a new vote has arrived.
+      // Room name must match poll UUID (same id used on analytics + socket join_poll).
       const io = getIO();
-      io.to(`poll_${pollId}`).emit('new_vote', { 
-        pollId, 
-        responseId: responseRecord.id 
+      io.to(`poll_${poll.id}`).emit('new_vote', {
+        pollId: poll.id,
+        responseId: responseRecord.id,
       });
 
       res.status(201).json({ success: true, responseId: responseRecord.id });

@@ -5,14 +5,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, 
   Trash2, 
-  ChevronDown, 
-  ChevronUp, 
   Settings2, 
   HelpCircle, 
   Send,
   Sparkles,
   Layout,
-  CheckCircle2
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -130,7 +127,7 @@ const CreatePoll = () => {
           </div>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
+        <div className="grid gap-8 lg:grid-cols-[1fr_minmax(0,320px)] lg:items-start">
           {/* MAIN CONTENT: QUESTIONS */}
           <div className="space-y-6">
             {/* POLL METADATA CARD */}
@@ -254,9 +251,19 @@ const CreatePoll = () => {
             </div>
           </div>
 
-          {/* SIDEBAR: SETTINGS */}
-          <div className="space-y-6">
-            <Card className="glass-card border-white/5 sticky top-32">
+          {/* SIDEBAR: tip first so it is never covered by settings; no sticky overlap */}
+          <div className="flex flex-col gap-6">
+            <div className="rounded-2xl border border-indigo-500/10 bg-indigo-500/[0.02] p-6">
+              <div className="flex items-center gap-2 mb-3 text-indigo-400">
+                <HelpCircle className="h-4 w-4" />
+                <span className="text-xs font-bold uppercase tracking-widest">Creator Tip</span>
+              </div>
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                Keep your questions concise and your options limited to 4-5 for better engagement and higher completion rates.
+              </p>
+            </div>
+
+            <Card className="glass-card border-white/5">
               <CardHeader>
                 <div className="flex items-center gap-2 mb-2">
                   <Settings2 className="h-4 w-4 text-amber-500" />
@@ -264,10 +271,10 @@ const CreatePoll = () => {
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="flex items-center justify-between py-2">
-                  <div className="space-y-0.5">
+                <div className="flex items-center justify-between gap-3 py-2">
+                  <div className="space-y-0.5 min-w-0">
                     <Label htmlFor="anonymous-mode" className="text-sm font-medium text-white cursor-pointer">Open voting (no account)</Label>
-                    <p className="text-[10px] text-zinc-500 max-w-[200px] leading-relaxed">
+                    <p className="text-[10px] text-zinc-500 leading-relaxed">
                       When on, anyone with the link can vote without signing in. When off, only signed-in users can respond.
                     </p>
                   </div>
@@ -306,16 +313,6 @@ const CreatePoll = () => {
                 </Button>
               </CardContent>
             </Card>
-
-            <div className="rounded-2xl border border-indigo-500/10 bg-indigo-500/[0.02] p-6">
-               <div className="flex items-center gap-2 mb-3 text-indigo-400">
-                 <HelpCircle className="h-4 w-4" />
-                 <span className="text-xs font-bold uppercase tracking-widest">Creator Tip</span>
-               </div>
-               <p className="text-xs text-zinc-400 leading-relaxed">
-                 Keep your questions concise and your options limited to 4-5 for better engagement and higher completion rates.
-               </p>
-            </div>
           </div>
         </div>
       </form>
