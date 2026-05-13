@@ -16,9 +16,10 @@
 8. [Poll CRUD Routes](#8-poll-crud-routes)
 9. [Response Engine](#9-response-engine)
 10. [Analytics Routes](#10-analytics-routes)
-11. [Socket.io Real-time](#11-socketio-real-time) *(pending)*
-11. [Frontend Setup](#11-frontend-setup) *(pending)*
-12. [Frontend Pages](#12-frontend-pages) *(pending)*
+11. [Socket.io Real-time](#11-socketio-real-time)
+12. [Expiry Cron Job](#12-expiry-cron-job)
+13. [Rate Limiting & Security](#13-rate-limiting--security)
+14. [Frontend Setup](#14-frontend-setup) *(pending)*
 
 ---
 
@@ -422,6 +423,28 @@ We built the "Brain" of the platform that calculates the results of the polls fo
 
 ---
 
+## 11. Socket.io Real-time Updates
+
+### Date: 2026-05-13
+
+### What we set up
+
+We added the ability for the server to "push" updates to the frontend instantly, making the poll results live.
+
+**Files Created/Modified:**
+- `server/lib/socket.js`: The central manager for Socket.io.
+- `server/server.js`: Updated to attach the socket server to our existing HTTP server.
+- `server/routes/responses.js`: Updated to trigger a broadcast every time a new vote is saved.
+
+### How it works:
+
+1. **The Handshake**: When a user opens the "Poll Results" page on the frontend, their browser will establish a permanent connection (a WebSocket) to the backend.
+2. **Room Logic**: Instead of broadcasting every vote to every single user on the platform (which would be chaotic), we use **Rooms**. When a user looks at Poll A, they "join" `room:poll_A`.
+3. **Instant Emission**: When the `POST /api/responses` route finishes saving a new answer to the database, it calls `getIO().to('room:poll_A').emit('new_vote')`.
+4. **Live UI**: The frontend receives this event and instantly triggers a re-fetch of the analytics or updates the chart bars, giving the user a "live" experience without them ever hitting refresh.
+
+---
+
 ## Upcoming Steps (Phase 2)
 
 The next things we will implement, in order:
@@ -437,6 +460,47 @@ The next things we will implement, in order:
 9. **Write `server/routes/auth.js`** — Login → callback → logout flow
 10. **Write `server/app.js`** — Express app with session + all routers
 11. **Write `server/server.js`** — HTTP server entry point
+
+---
+
+## 12. Poll Expiry Cron Job
+
+### Date: 2026-05-13
+
+### What we set up
+
+We implemented a background worker that automatically closes polls when they reach their scheduled expiration time.
+
+**Files Created/Modified:**
+- `server/jobs/expiryJob.js`: The logic for finding and closing expired polls.
+- `server/server.js`: Updated to start the cron worker when the backend boots.
+
+### How it works:
+
+1. **The Scheduler**: We use the `node-cron` library. It is configured with the pattern `* * * * *`, which tells it to wake up **every 60 seconds**.
+2. **The Query**: Every minute, the script asks the database: *"Show me any polls that are marked as ACTIVE but have an `expiresAt` timestamp that is smaller than (before) right now."*
+3. **The Auto-Close**: For any polls it finds, it automatically sets `isActive = false`. 
+4. **Visibility**: This ensures that even if no one is visiting the site, the database stays up to date and polls close precisely when they are supposed to.
+
+---
+
+## 13. Rate Limiting & Security
+
+### Date: 2026-05-13
+
+### What we set up
+
+We added a security layer to protect the server from automated attacks, brute-force logins, and poll spam.
+
+**Files Modified:**
+- `server/app.js`: Configured and applied three levels of rate limiting using `express-rate-limit`.
+
+### How it works:
+
+1. **Global Safety**: Every IP address is limited to 100 requests every 15 minutes across the whole site. This stops "DDoS" style attacks where a single computer tries to crash the server.
+2. **Brute-Force Protection**: The `/auth` routes (Login and Signup) are much stricter. If someone tries to guess a password and fails more than 10 times in 15 minutes, the server will block their IP temporarily.
+3. **Spam Prevention**: The `/api/responses` route (Voting) is limited to 5 votes per minute per IP. This ensures that a single user (or bot) cannot cast hundreds of votes in a few seconds.
+4. **Friendly Messages**: When a limit is hit, the server returns a clean JSON error message like `"Slow down! You are voting too fast."` instead of just crashing.
 
 ---
 

@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+ 
+@layer base {
+  :root {
+    --background: 240 10% 2%; /* #060608 */
+    --foreground: 240 10% 95%; /* #eeedf5 */
+ 
+    --card: 240 10% 4%;
+    --card-foreground: 240 10% 95%;
+ 
+    --popover: 240 10% 4%;
+    --popover-foreground: 240 10% 95%;
+ 
+    --primary: 247 100% 72%; /* #7c6eff */
+    --primary-foreground: 0 0% 100%;
+ 
+    --secondary: 240 5% 10%;
+    --secondary-foreground: 0 0% 98%;
+ 
+    --muted: 240 5% 15%;
+    --muted-foreground: 240 5% 65%; /* #65636f */
+ 
+    --accent: 247 100% 72% / 10%;
+    --accent-foreground: 247 100% 72%;
+ 
+    --destructive: 351 100% 65%; /* #ff4f6a */
+    --destructive-foreground: 0 0% 100%;
+ 
+    --border: 240 10% 12%;
+    --input: 240 10% 12%;
+    --ring: 247 100% 72%;
+ 
+    --radius: 12px;
+
+    /* Custom Voxly tokens */
+    --fh: 'Syne', sans-serif;
+    --fb: 'DM Sans', sans-serif;
+  }
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary;
+    font-family: var(--fb);
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--fh);
+  }
+  
+  /* Voxly Grid Background */
+  body::before {
+    content: '';
+    position: fixed; 
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(124,110,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,110,255,0.02) 1px, transparent 1px);
+    background-size: 52px 52px;
+    pointer-events: none; 
+    z-index: 0;
+  }
+}
+
+.glass {
+  @apply bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[14px];
+}
+
+.glass-card {
+  @apply bg-white/[0.035] backdrop-blur-2xl border border-white/[0.08] rounded-[14px] shadow-2xl;
+}
+
+.glass-2 {
+  @apply bg-white/10 backdrop-blur-3xl border border-white/20 rounded-[14px];
+}
+
+/* Custom Btn Glow */
+.btn-primary {
+  @apply bg-primary text-white shadow-[0_0_20px_rgba(124,110,255,0.28)] hover:shadow-[0_0_30px_rgba(124,110,255,0.4)] transition-all;
+}
+
+/* Responsive Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}

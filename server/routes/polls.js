@@ -70,7 +70,34 @@ router.get('/mine', requireSession, async (req, res) => {
 });
 
 // ==========================================
-// 3. GET /api/polls/:slug - Load poll for respondents
+// 3. GET /api/polls/details/:id - Load poll by ID (Owner only)
+// Must be registered before /:slug so "details" is not captured as a slug.
+// ==========================================
+router.get('/details/:id', requireSession, requirePollOwner, async (req, res) => {
+  try {
+    const fullPoll = await db.query.polls.findFirst({
+      where: eq(polls.id, req.params.id),
+      with: {
+        questions: {
+          orderBy: (qs, { asc }) => [asc(qs.orderIndex)],
+          with: {
+            options: {
+              orderBy: (opts, { asc }) => [asc(opts.orderIndex)],
+            }
+          }
+        }
+      }
+    });
+
+    if (!fullPoll) return res.status(404).json({ error: 'Poll not found' });
+    res.json(fullPoll);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch poll details' });
+  }
+});
+
+// ==========================================
+// 4. GET /api/polls/:slug - Load poll for respondents (public slug)
 // ==========================================
 router.get('/:slug', async (req, res) => {
   try {
@@ -100,7 +127,7 @@ router.get('/:slug', async (req, res) => {
 });
 
 // ==========================================
-// 4. PUT /api/polls/:id - Edit poll metadata
+// 5. PUT /api/polls/:id - Edit poll metadata
 // ==========================================
 router.put('/:id', requireSession, requirePollOwner, async (req, res) => {
   const { title, description, isAnonymous, isActive, expiresAt } = req.body;

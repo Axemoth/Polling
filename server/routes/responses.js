@@ -28,16 +28,13 @@ router.post('/', async (req, res) => {
       return res.status(403).json({ error: 'This poll has expired' });
     }
 
-    // 2. Identify the respondent
-    // If the poll requires authentication (!isAnonymous), check session
+    // Verified-only polls: respondents must be signed in.
+    // Anonymous polls: anyone may vote; we do not attach a user id (privacy).
     if (!poll.isAnonymous && !req.session.userId) {
       return res.status(401).json({ error: 'You must be logged in to vote on this poll' });
     }
 
-    const respondentId = req.session.userId || null;
-    
-    // Grab the IP address (Express handles proxy IPs if configured)
-    const ipAddress = req.ip || req.socket.remoteAddress;
+    const respondentId = poll.isAnonymous ? null : req.session.userId;
 
     // 3. Save Response and Answers using a Database Transaction
     // If inserting answers fails, the response record is deleted automatically.
@@ -46,15 +43,13 @@ router.post('/', async (req, res) => {
       const [responseRecord] = await tx.insert(responses).values({
         pollId: poll.id,
         respondentId,
-        ipAddress,
       }).returning();
 
       // Map the incoming answers to match the database schema
       const answerRows = submittedAnswers.map(ans => ({
-        responseId: responseRecord.id,
-        questionId: ans.questionId,
-        optionId:   ans.optionId || null,
-        textAnswer: ans.textAnswer || null,
+        responseId:       responseRecord.id,
+        questionId:       ans.questionId,
+        selectedOptionId: ans.optionId, // Correct column name
       }));
 
       // Insert all answers in a single bulk operation for performance

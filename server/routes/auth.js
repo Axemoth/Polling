@@ -32,7 +32,11 @@ router.post('/local/signup', async (req, res) => {
   // Log them in
   req.session.userId = user.id;
   req.session.userName = user.name;
-  res.json({ success: true, user: { id: user.id, name: user.name, email: user.email } });
+  
+  req.session.save((err) => {
+    if (err) return res.status(500).json({ error: 'Session save failed' });
+    res.json({ success: true, user: { id: user.id, name: user.name, email: user.email } });
+  });
 });
 
 router.post('/local/login', async (req, res) => {
@@ -55,7 +59,11 @@ router.post('/local/login', async (req, res) => {
   // Log them in
   req.session.userId = user.id;
   req.session.userName = user.name;
-  res.json({ success: true, user: { id: user.id, name: user.name, email: user.email } });
+
+  req.session.save((err) => {
+    if (err) return res.status(500).json({ error: 'Session save failed' });
+    res.json({ success: true, user: { id: user.id, name: user.name, email: user.email } });
+  });
 });
 
 

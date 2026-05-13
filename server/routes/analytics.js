@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { db } from '../db/index.js';
-import { polls, questions, options, answers, responses } from '../db/schema.js';
+import { answers, responses } from '../db/schema.js';
 import { eq, sql } from 'drizzle-orm';
 import { requireSession } from '../middleware/requireSession.js';
 import { requirePollOwner } from '../middleware/requirePollOwner.js';
@@ -21,23 +21,16 @@ router.get('/:id', requireSession, requirePollOwner, async (req, res) => {
     // This query joins answers with options to get counts for each choice.
     const optionCounts = await db.select({
       questionId: answers.questionId,
-      optionId:   answers.optionId,
+      optionId:   answers.selectedOptionId, // Correct column name
       count:      sql`count(*)`.mapWith(Number)
     })
     .from(answers)
     .innerJoin(responses, eq(answers.responseId, responses.id))
     .where(eq(responses.pollId, req.params.id))
-    .groupBy(answers.questionId, answers.optionId);
+    .groupBy(answers.questionId, answers.selectedOptionId); // Correct column name
 
-    // 3. Get text-based answers for open-ended questions
-    const textResults = await db.select({
-      questionId: answers.questionId,
-      text:       answers.textAnswer,
-      createdAt:  responses.createdAt
-    })
-    .from(answers)
-    .innerJoin(responses, eq(answers.responseId, responses.id))
-    .where(sql`${answers.textAnswer} IS NOT NULL AND ${responses.pollId} = ${req.params.id}`);
+    // Open-ended / text answers are not stored on `answers` in the current schema.
+    const textResults = [];
 
     res.json({
       totalResponses: countRes?.count || 0,

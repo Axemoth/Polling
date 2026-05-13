@@ -15,8 +15,8 @@ const app = express();
 
 // 1. General Limiter: Prevents a single IP from spamming the whole site.
 const generalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per window
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 1000, // Very high for dev
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many requests, please try again later.' }
@@ -24,15 +24,15 @@ const generalLimiter = rateLimit({
 
 // 2. Auth Limiter: Much stricter. Prevents password guessing.
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // Limit each IP to 10 login/signup attempts per 15 mins
-  message: { error: 'Too many login attempts. Please wait 15 minutes.' }
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 100, // Increased for dev
+  message: { error: 'Too many login attempts. Please wait a minute.' }
 });
 
 // 3. Vote Limiter: Prevents bot-spamming responses.
 const voteLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 5, // Limit to 5 votes per minute per IP
+  max: 50, // Increased for dev
   message: { error: 'Slow down! You are voting too fast.' }
 });
 
@@ -40,8 +40,15 @@ const voteLimiter = rateLimit({
 app.use(generalLimiter);
 
 // Allow the React frontend to make requests with credentials (cookies)
+const allowedOrigins = [process.env.CLIENT_URL, 'http://localhost:5173', 'http://localhost:5174'];
 app.use(cors({
-  origin: process.env.CLIENT_URL,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
@@ -49,10 +56,10 @@ app.use(express.json());
 
 // Set up PostgreSQL-backed sessions
 app.use(session({
-  store: new PgStore({ 
+  store: new PgStore({
     conString: process.env.DB_URL,
     // Automatically creates the 'session' table in Postgres if it doesn't exist
-    createTableIfMissing: true 
+    createTableIfMissing: true
   }),
   secret: process.env.SESSION_SECRET,
   resave: false,
@@ -60,6 +67,7 @@ app.use(session({
   cookie: {
     httpOnly: true, // Prevents JavaScript from reading the cookie (XSS protection)
     secure: process.env.NODE_ENV === 'production', // Requires HTTPS in production
+    sameSite: 'lax', // Essential for some browsers on localhost
     maxAge: 8 * 60 * 60 * 1000, // 8 hours
   },
 }));
