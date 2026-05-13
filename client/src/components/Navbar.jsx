@@ -16,7 +16,7 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-10">
-          <Link to="/" className="flex items-center gap-2 text-xl font-bold tracking-tighter text-white">
+          <Link to="/dashboard" className="flex items-center gap-2 text-xl font-bold tracking-tighter text-white">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-600">
               <BarChart className="h-5 w-5" />
             </div>
@@ -24,11 +24,11 @@ const Navbar = () => {
           </Link>
           
           <div className="hidden md:flex items-center gap-2">
-            <Link to="/">
+            <Link to="/dashboard">
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className={`gap-2 ${isActive('/') ? 'bg-zinc-900 text-white' : 'text-zinc-400 hover:text-white'}`}
+                className={`gap-2 ${isActive('/dashboard') ? 'bg-zinc-900 text-white' : 'text-zinc-400 hover:text-white'}`}
               >
                 <Home className="h-4 w-4" />
                 Dashboard

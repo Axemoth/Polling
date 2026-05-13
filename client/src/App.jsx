@@ -7,6 +7,8 @@ import CreatePoll from './pages/CreatePoll';
 import Analytics from './pages/Analytics';
 import Vote from './pages/Vote';
 
+import Landing from './pages/Landing';
+
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
   
@@ -20,28 +22,37 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen bg-zinc-950 font-sans antialiased text-zinc-100">
-        <Navbar />
         <Routes>
           {/* Public Routes */}
+          <Route path="/" element={<Landing />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/vote/:id" element={<Vote />} />
           
           {/* Protected Routes (Require Login) */}
-          <Route path="/" element={
+          <Route path="/dashboard" element={
             <ProtectedRoute>
-              <Dashboard />
+              <>
+                <Navbar />
+                <Dashboard />
+              </>
             </ProtectedRoute>
           } />
 
           <Route path="/create" element={
             <ProtectedRoute>
-              <CreatePoll />
+              <>
+                <Navbar />
+                <CreatePoll />
+              </>
             </ProtectedRoute>
           } />
           
           <Route path="/analytics/:id" element={
             <ProtectedRoute>
-              <Analytics />
+              <>
+                <Navbar />
+                <Analytics />
+              </>
             </ProtectedRoute>
           } />
 

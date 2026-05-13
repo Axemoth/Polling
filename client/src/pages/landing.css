@@ -1,0 +1,149 @@
+/* ─── Blue theme tokens ───────────────────────────────────────────────────── */
+.landing {
+  --cy:  #00c8ff;
+  --bl:  #38bdf8;
+  --bl2: #0ea5e9;
+  --ice: #e0f4ff;
+  --ltx: #d8edf8;
+  --lmu: #4d7a99;
+  --lbg: #020b14;
+  --b1:  rgba(0, 180, 255, 0.10);
+  --b2:  rgba(0, 180, 255, 0.20);
+  --s1:  rgba(0, 180, 255, 0.05);
+
+  background-color: #020b14;
+  color: #d8edf8;
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ─── Grid background ─────────────────────────────────────────────────────── */
+.landing::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 180, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 180, 255, 0.035) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── Scanline overlay ────────────────────────────────────────────────────── */
+.landing::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.025) 2px,
+    rgba(0, 0, 0, 0.025) 4px
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.landing-rel { position: relative; z-index: 1; }
+
+/* ─── Floating chip animation ─────────────────────────────────────────────── */
+@keyframes lc-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-9px); }
+}
+.float-chip { animation: lc-float 4s ease-in-out infinite; }
+.float-chip-2 { animation: lc-float 4s ease-in-out infinite; animation-delay: -1.5s; }
+.float-chip-3 { animation: lc-float 4s ease-in-out infinite; animation-delay: -3s; }
+
+/* ─── Badge dot pulse ─────────────────────────────────────────────────────── */
+@keyframes lc-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.65); }
+}
+.pulse-dot { animation: lc-pulse 2s ease-in-out infinite; }
+
+/* ─── Hero h1 text reveal ─────────────────────────────────────────────────── */
+.hero-hl {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(0, 200, 255, 0.55);
+  display: inline-block;
+  position: relative;
+}
+.hero-hl-fill {
+  position: absolute;
+  inset: 0;
+  color: #00c8ff;
+  clip-path: inset(0 100% 0 0);
+  animation: lc-reveal 1.3s 0.7s ease forwards;
+  white-space: nowrap;
+}
+@keyframes lc-reveal {
+  to { clip-path: inset(0 0% 0 0); }
+}
+
+/* ─── Demo card scanline ──────────────────────────────────────────────────── */
+@keyframes lc-scan {
+  0%   { top: 0;    opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+.demo-scan {
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 200, 255, 0.5), transparent);
+  animation: lc-scan 3s linear infinite;
+  pointer-events: none;
+}
+
+/* ─── WebSocket pulse rings ───────────────────────────────────────────────── */
+@keyframes lc-ring {
+  0%   { width: 18px;  height: 18px;  opacity: 0.8; }
+  100% { width: 110px; height: 110px; opacity: 0; }
+}
+.ws-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 200, 255, 0.3);
+  animation: lc-ring 2.5s ease-out infinite;
+}
+.ws-ring-2 { animation-delay: 0.8s; }
+.ws-ring-3 { animation-delay: 1.6s; }
+
+@keyframes lc-ws-pulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(0.83); }
+}
+.ws-center {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: #00c8ff;
+  box-shadow: 0 0 18px rgba(0, 200, 255, 0.65);
+  animation: lc-ws-pulse 2.5s ease-in-out infinite;
+  z-index: 1;
+}
+
+/* ─── Connecting line between steps ──────────────────────────────────────── */
+.steps-connector {
+  position: absolute;
+  top: 28px;
+  left: 22%;
+  right: 22%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 180, 255, 0.25), transparent);
+}
+
+/* ─── Glass card (blue tint override) ────────────────────────────────────── */
+.glass-blue {
+  background: rgba(4, 15, 29, 0.75);
+  border: 1px solid rgba(0, 180, 255, 0.12);
+  border-radius: 14px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+}
+.glass-blue:hover {
+  border-color: rgba(0, 180, 255, 0.26);
+}

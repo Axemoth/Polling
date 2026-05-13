@@ -15,8 +15,8 @@ const Auth = () => {
 
   const getSafeNextPath = () => {
     const next = searchParams.get('next');
-    if (next && next.startsWith('/') && !next.startsWith('//')) return next;
-    return '/';
+    if (next && next.startsWith('/') && !next.startsWith('//') && next !== '/') return next;
+    return '/dashboard';
   };
 
   // Redirect if already logged in (only on mount)
