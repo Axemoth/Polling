@@ -3,11 +3,15 @@ import http from 'http';
 import app from './app.js';
 import { initOidc } from './lib/oidc.js';
 import { initSocket } from './lib/socket.js';
+import { startExpiryJob } from './jobs/expiryJob.js';
 
 const server = http.createServer(app);
 
 // Initialize Socket.io and link it to our HTTP server
 initSocket(server);
+
+// Start background jobs
+startExpiryJob();
 
 console.log('Initializing OIDC Discovery...');
 

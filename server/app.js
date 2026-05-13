@@ -2,6 +2,7 @@ import express from 'express';
 import session from 'express-session';
 import connectPg from 'connect-pg-simple';
 import cors from 'cors';
+import { rateLimit } from 'express-rate-limit';
 import authRouter from './routes/auth.js';
 import pollsRouter from './routes/polls.js';
 import responsesRouter from './routes/responses.js';
@@ -9,6 +10,34 @@ import analyticsRouter from './routes/analytics.js';
 
 const PgStore = connectPg(session);
 const app = express();
+
+// --- RATE LIMITING ---
+
+// 1. General Limiter: Prevents a single IP from spamming the whole site.
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later.' }
+});
+
+// 2. Auth Limiter: Much stricter. Prevents password guessing.
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit each IP to 10 login/signup attempts per 15 mins
+  message: { error: 'Too many login attempts. Please wait 15 minutes.' }
+});
+
+// 3. Vote Limiter: Prevents bot-spamming responses.
+const voteLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 5, // Limit to 5 votes per minute per IP
+  message: { error: 'Slow down! You are voting too fast.' }
+});
+
+// Apply general limiter to ALL routes
+app.use(generalLimiter);
 
 // Allow the React frontend to make requests with credentials (cookies)
 app.use(cors({
@@ -35,14 +64,14 @@ app.use(session({
   },
 }));
 
-// Mount the Auth routes
-app.use('/auth', authRouter);
+// Mount the Auth routes (with extra security)
+app.use('/auth', authLimiter, authRouter);
 
 // Mount the Poll routes
 app.use('/api/polls', pollsRouter);
 
-// Mount the Responses routes
-app.use('/api/responses', responsesRouter);
+// Mount the Responses routes (with anti-spam)
+app.use('/api/responses', voteLimiter, responsesRouter);
 
 // Mount the Analytics routes
 app.use('/api/analytics', analyticsRouter);
