@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { db } from '../db/index.js';
-import { answers, responses } from '../db/schema.js';
+import { answers, responses, questions } from '../db/schema.js';
 import { eq, sql } from 'drizzle-orm';
 import { requireSession } from '../middleware/requireSession.js';
 import { requirePollOwner } from '../middleware/requirePollOwner.js';
@@ -32,10 +32,42 @@ router.get('/:id', requireSession, requirePollOwner, async (req, res) => {
     // Open-ended / text answers are not stored on `answers` in the current schema.
     const textResults = [];
 
+    const totalResponses = countRes?.count || 0;
+    let totalAnswerSelections = 0;
+    const perQuestionAnswerTotals = {};
+    for (const row of optionCounts) {
+      totalAnswerSelections += row.count;
+      perQuestionAnswerTotals[row.questionId] =
+        (perQuestionAnswerTotals[row.questionId] || 0) + row.count;
+    }
+
+    const pollQuestionRows = await db
+      .select({ id: questions.id })
+      .from(questions)
+      .where(eq(questions.pollId, req.params.id));
+
+    const answerTotalsByQuestion = Object.entries(perQuestionAnswerTotals).map(
+      ([questionId, answerCount]) => ({ questionId, answerCount })
+    );
+
+    const questionCount = pollQuestionRows.length;
+    const expectedAnswersIfFull = totalResponses * questionCount;
+    const allQuestionsMatchResponses =
+      totalResponses > 0 &&
+      questionCount > 0 &&
+      pollQuestionRows.every((q) => (perQuestionAnswerTotals[q.id] || 0) === totalResponses);
+
     res.json({
-      totalResponses: countRes?.count || 0,
+      totalResponses,
       optionCounts,
-      textResults
+      textResults,
+      participation: {
+        questionCount,
+        totalAnswerSelections,
+        answerTotalsByQuestion,
+        expectedAnswersIfFull,
+        allQuestionsMatchResponses,
+      },
     });
   } catch (error) {
     console.error('Analytics Error:', error);
