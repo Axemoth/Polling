@@ -54,6 +54,9 @@ app.use(cors({
 
 app.use(express.json());
 
+// Tell Express to trust the proxy (Azure) so secure cookies work properly
+app.set('trust proxy', 1);
+
 // Set up PostgreSQL-backed sessions
 app.use(session({
   store: new PgStore({
@@ -67,7 +70,7 @@ app.use(session({
   cookie: {
     httpOnly: true, // Prevents JavaScript from reading the cookie (XSS protection)
     secure: process.env.NODE_ENV === 'production', // Requires HTTPS in production
-    sameSite: 'lax', // Essential for some browsers on localhost
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' is required for cross-domain cookies
     maxAge: 8 * 60 * 60 * 1000, // 8 hours
   },
 }));
