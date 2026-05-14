@@ -145,7 +145,7 @@ const Vote = () => {
         <h1 className="text-4xl font-black tracking-tighter text-white mb-4">Response Captured.</h1>
         <p className="text-zinc-500 mb-10 leading-relaxed">
           Your feedback has been securely transmitted to the campaign creator.
-          Thank you for making your voice heard on Voxly.
+          Thank you for making your voice heard on Axepoll.
         </p>
         <Button 
           onClick={() => navigate('/')} 

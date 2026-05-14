@@ -34,7 +34,7 @@
  
     --radius: 12px;
 
-    /* Custom Voxly tokens */
+    /* Custom Axepoll tokens */
     --fh: 'Syne', sans-serif;
     --fb: 'DM Sans', sans-serif;
   }
@@ -52,7 +52,7 @@
     font-family: var(--fh);
   }
   
-  /* Voxly Grid Background */
+  /* Axepoll Grid Background */
   body::before {
     content: '';
     position: fixed; 

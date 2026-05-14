@@ -11,7 +11,9 @@ import {
   MessageSquare,
   Layers,
   ListChecks,
+  Copy
 } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -94,7 +96,7 @@ const Analytics = () => {
   if (!poll || !data) return (
     <div className="flex h-screen flex-col items-center justify-center bg-[#060608] text-[#eeedf5]">
       <h2 className="text-2xl font-bold">Analytics not available</h2>
-      <Link to="/" className="mt-4 text-cyan-400 hover:text-cyan-300 hover:underline">Return to Dashboard</Link>
+      <Link to="/dashboard" className="mt-4 text-cyan-400 hover:text-cyan-300 hover:underline">Return to Dashboard</Link>
     </div>
   );
 
@@ -174,7 +176,7 @@ const Analytics = () => {
       <div className="sticky top-0 z-40 border-b border-white/5 bg-zinc-950/80 backdrop-blur-xl">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-4">
-            <Link to="/">
+            <Link to="/dashboard">
               <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/5">
                 <ArrowLeft className="h-5 w-5 text-zinc-400" />
               </Button>
@@ -211,21 +213,50 @@ const Analytics = () => {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Button
-              type="button"
-              variant="ghost"
-              className="border-white/5 text-zinc-400 hover:text-white"
-              onClick={() => {
-                const url = `${window.location.origin}/vote/${poll.publicSlug}`;
-                void navigator.clipboard.writeText(url).then(
-                  () => toast.success('Public vote link copied'),
-                  () => toast.error('Could not copy link')
-                );
-              }}
-            >
-              <Share2 className="mr-2 h-4 w-4" />
-              Copy vote link
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="border-white/5 text-zinc-400 hover:text-white"
+                >
+                  <Share2 className="mr-2 h-4 w-4" />
+                  Share Poll
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-zinc-950 border-white/10 sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="text-white">Share Poll</DialogTitle>
+                  <DialogDescription className="text-zinc-400">
+                    Anyone with this link or QR code can vote.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="flex flex-col items-center justify-center py-6 gap-6">
+                  <div className="bg-white p-4 rounded-xl">
+                    <img 
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`${window.location.origin}/vote/${poll.publicSlug}`)}`}
+                      alt="QR Code"
+                      className="w-48 h-48"
+                    />
+                  </div>
+                  <div className="flex w-full items-center space-x-2">
+                    <div className="flex-1 bg-zinc-900 border border-zinc-800 text-zinc-300 p-3 rounded-lg text-sm truncate">
+                      {`${window.location.origin}/vote/${poll.publicSlug}`}
+                    </div>
+                    <Button onClick={() => {
+                      const url = `${window.location.origin}/vote/${poll.publicSlug}`;
+                      void navigator.clipboard.writeText(url).then(
+                        () => toast.success('Public vote link copied'),
+                        () => toast.error('Could not copy link')
+                      );
+                    }} className="bg-cyan-600 hover:bg-cyan-700 text-white">
+                      <Copy className="h-4 w-4 mr-2" />
+                      Copy
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </div>

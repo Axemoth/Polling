@@ -1,33 +1,23 @@
-import { Issuer, generators } from 'openid-client';
+import { Issuer, generators, custom } from 'openid-client';
 
-let oidcClient;
+let googleClient;
 
 export async function initOidc() {
-  const issuerUrl = process.env.OIDC_ISSUER_URL || 'https://accounts.google.com';
-  
-  // 1. Discovery: Connect to the provider to fetch its configuration
-  const issuer = await Issuer.discover(issuerUrl);
-  
-  // Apply manual overrides ONLY if we are using the Axemoth provider
-  // (This handles the 'localhost' discovery issue on your Azure deployment)
-  if (issuerUrl.includes('axemoth.com')) {
-    issuer.metadata.authorization_endpoint = 'https://oidc.axemoth.com/authorize';
-    issuer.metadata.token_endpoint = 'https://api.axemoth.com/token';
-    issuer.metadata.userinfo_endpoint = 'https://api.axemoth.com/userinfo';
-    issuer.metadata.jwks_uri = 'https://api.axemoth.com/.well-known/jwks.json';
+  // 1. Google Setup
+  try {
+    const googleIssuer = await Issuer.discover('https://accounts.google.com');
+    googleClient = new googleIssuer.Client({
+      client_id:      process.env.GOOGLE_CLIENT_ID,
+      client_secret:  process.env.GOOGLE_CLIENT_SECRET,
+      redirect_uris:  [process.env.GOOGLE_REDIRECT_URI],
+      response_types: ['code'],
+    });
+    googleClient[custom.clock_tolerance] = 300; // 5 minute clock skew allowance
+  } catch (err) {
+    console.error("Warning: Failed to initialize Google OIDC. Check credentials.");
   }
-  
-  // 2. Client Setup
-  oidcClient = new issuer.Client({
-    client_id:      process.env.OIDC_CLIENT_ID,
-    client_secret:  process.env.OIDC_CLIENT_SECRET,
-    redirect_uris:  [process.env.OIDC_REDIRECT_URI],
-    response_types: ['code'],
-  });
 }
 
-export function getOidcClient() {
-  return oidcClient;
-}
+export function getGoogleClient() { return googleClient; }
 
 export { generators };

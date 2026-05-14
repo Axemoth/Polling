@@ -22,3 +22,6 @@ Thumbs.db
 
 # Local-only documentation (not committed)
 FRONTEND_FLOW.local.md
+
+# Axemoth backup
+axemoth_setup.md

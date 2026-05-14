@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
-import { getOidcClient, generators } from '../lib/oidc.js';
+import { getGoogleClient, generators } from '../lib/oidc.js';
 import { db } from '../db/index.js';
 import { users } from '../db/schema.js';
 import { eq } from 'drizzle-orm';
@@ -14,6 +14,7 @@ const router = Router();
 router.post('/local/signup', async (req, res) => {
   const { name, email, password } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
+  if (password.length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters long' });
 
   // Check if user already exists
   const existing = await db.select().from(users).where(eq(users.email, email));
@@ -71,8 +72,9 @@ router.post('/local/login', async (req, res) => {
 // 2. OIDC AUTH (Google/Axemoth)
 // ==========================================
 
-router.get('/login', (req, res) => {
-  const client = getOidcClient();
+// --- Helper to handle OIDC Login ---
+function handleOidcLogin(client, req, res) {
+  if (!client) return res.status(500).send("OIDC Client not initialized.");
   const state  = generators.state();
   const nonce  = generators.nonce();
   
@@ -92,15 +94,16 @@ router.get('/login', (req, res) => {
   });
 
   res.redirect(url);
-});
+}
 
-router.get('/callback', async (req, res) => {
-  const client = getOidcClient();
+// --- Helper to handle OIDC Callback ---
+async function handleOidcCallback(client, redirectUri, req, res) {
+  if (!client) return res.status(500).send("OIDC Client not initialized.");
   const params = client.callbackParams(req);
 
   try {
     const tokenSet = await client.callback(
-      process.env.OIDC_REDIRECT_URI,
+      redirectUri,
       params,
       { 
         state: req.session.oidcState, 
@@ -117,8 +120,6 @@ router.get('/callback', async (req, res) => {
     let user = existing[0];
 
     if (user) {
-      // If they exist but their `sub` is empty (they originally signed up via Local Auth),
-      // update their record to link the OIDC `sub` so they can use either method.
       if (!user.sub) {
         const [updatedUser] = await db.update(users)
           .set({ sub: claims.sub })
@@ -150,7 +151,12 @@ router.get('/callback', async (req, res) => {
     console.error('OIDC Callback Error:', error);
     res.status(500).send('Authentication Failed');
   }
-});
+}
+
+// Google Routes
+router.get('/google', (req, res) => handleOidcLogin(getGoogleClient(), req, res));
+router.get('/google/callback', (req, res) => handleOidcCallback(getGoogleClient(), process.env.GOOGLE_REDIRECT_URI, req, res));
+
 
 
 // ==========================================

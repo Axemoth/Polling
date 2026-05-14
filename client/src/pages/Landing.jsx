@@ -59,21 +59,27 @@ function Navbar() {
         backdropFilter: "blur(24px)",
       }}
     >
-      <div
-        className="text-[19px] font-extrabold tracking-[-0.03em]"
-        style={{ fontFamily: "'Syne', sans-serif", color: "#e0f4ff" }}
-      >
-        Vox<span style={{ color: "#00c8ff" }}>ly</span>
+      <div className="flex items-center gap-2">
+        <img src="/logo.png" alt="Axepoll Logo" className="h-8 w-auto object-contain" />
+        <div
+          className="text-[19px] font-extrabold tracking-[-0.03em]"
+          style={{ fontFamily: "'Syne', sans-serif", color: "#e0f4ff" }}
+        >
+          Axe<span style={{ color: "#38bdf8" }}>poll</span>
+        </div>
       </div>
 
       <div className="hidden md:flex items-center gap-8">
-        {["How it works", "Features", "Docs", "Pricing"].map((l) => (
+        {[
+          { label: "How it works", href: "#how" },
+          { label: "About", href: "#about" }
+        ].map((item) => (
           <a
-            key={l}
-            href="#"
-            className="text-[13px] font-medium text-[#4d7a99] hover:text-[#d8edf8] transition-colors duration-200"
+            key={item.label}
+            href={item.href}
+            className="text-[13px] font-medium text-[#64748b] hover:text-[#e0f2fe] transition-colors duration-200"
           >
-            {l}
+            {item.label}
           </a>
         ))}
       </div>
@@ -271,15 +277,15 @@ function LivePollDemo() {
 function Hero() {
   const navigate = useNavigate();
   return (
-    <section className="landing-rel min-h-screen grid md:grid-cols-2 items-center gap-16 max-w-[1280px] mx-auto px-16 pt-28 pb-24">
+    <section className="landing-rel min-h-screen grid items-center max-w-[1280px] mx-auto px-16 pt-28 pb-24 text-center justify-center">
       {/* Orbs */}
       <div
         className="absolute pointer-events-none"
-        style={{ width: 700, height: 700, borderRadius: "50%", background: "radial-gradient(circle, rgba(0,180,255,0.07) 0%, transparent 70%)", top: -200, left: -150 }}
+        style={{ width: 700, height: 700, borderRadius: "50%", background: "radial-gradient(circle, rgba(56, 189, 248, 0.05) 0%, transparent 70%)", top: -200, left: -150 }}
       />
       <div
         className="absolute pointer-events-none"
-        style={{ width: 380, height: 380, borderRadius: "50%", background: "radial-gradient(circle, rgba(56,189,248,0.05) 0%, transparent 70%)", bottom: 0, right: -60 }}
+        style={{ width: 380, height: 380, borderRadius: "50%", background: "radial-gradient(circle, rgba(56, 189, 248, 0.03) 0%, transparent 70%)", bottom: 0, right: -60 }}
       />
 
       {/* Left */}
@@ -313,7 +319,7 @@ function Hero() {
 
         {/* Sub */}
         <motion.p
-          className="text-[17px] leading-[1.7] max-w-[440px] mb-9"
+          className="text-[17px] leading-[1.7] max-w-[440px] mx-auto mb-9"
           style={{ color: "#4d7a99" }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -326,7 +332,7 @@ function Hero() {
 
         {/* Actions */}
         <motion.div
-          className="flex items-center gap-4"
+          className="flex items-center justify-center gap-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
@@ -350,38 +356,8 @@ function Hero() {
           </button>
         </motion.div>
 
-        {/* Trust */}
-        <motion.div
-          className="flex items-center gap-3 mt-9 text-[12px]"
-          style={{ color: "#4d7a99" }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.45 }}
-        >
-          <div className="flex">
-            {["#0ea5e9,#00c8ff", "#0284c7,#38bdf8", "#0369a1,#7dd3fc", "#075985,#bae6fd"].map((g, i) => (
-              <div
-                key={i}
-                className="w-7 h-7 rounded-full border-2 flex items-center justify-center text-[10px] font-bold text-white"
-                style={{ background: `linear-gradient(135deg, ${g})`, borderColor: "#020b14", marginLeft: i === 0 ? 0 : -8 }}
-              >
-                {["A","K","R","M"][i]}
-              </div>
-            ))}
-          </div>
-          <span>Trusted by <strong style={{ color: "#d8edf8" }}>1,200+</strong> teams already</span>
-        </motion.div>
-      </div>
 
-      {/* Right — live demo */}
-      <motion.div
-        className="relative z-10 pt-6 pb-6 pr-6"
-        initial={{ opacity: 0, y: 28 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.22 }}
-      >
-        <LivePollDemo />
-      </motion.div>
+      </div>
     </section>
   );
 }
@@ -418,7 +394,7 @@ function StatsBar() {
   const stats = [
     { label: "Polls created",       target: 12400, large: true, suffix: "+" },
     { label: "Responses collected", target: 280000, large: true, suffix: "+" },
-    { label: "Teams using Voxly",   target: 1200,  large: true, suffix: "+" },
+    { label: "Teams using Axepoll",   target: 1200,  large: true, suffix: "+" },
     { label: "Uptime SLA",          value:  "99%",  fixed: true },
   ];
 
@@ -621,125 +597,22 @@ function BentoTitle({ children }) {
   );
 }
 
-function Features() {
+function About() {
   return (
-    <section id="features" className="landing-rel pb-28">
-      <div className="max-w-[1100px] mx-auto px-12">
+    <section id="about" className="landing-rel pb-28">
+      <div className="max-w-[800px] mx-auto px-12 text-center">
         <Reveal>
-          <SectionLabel>Features</SectionLabel>
+          <SectionLabel>About Axepoll</SectionLabel>
           <h2
-            className="text-[clamp(30px,4vw,48px)] font-extrabold tracking-[-0.03em] leading-[1.08]"
-            style={{ fontFamily: "'Syne', sans-serif", color: "#e0f4ff" }}
+            className="text-[32px] font-extrabold tracking-[-0.03em] mb-6"
+            style={{ fontFamily: "'Syne', sans-serif", color: "#f0f9ff" }}
           >
-            Everything you need.<br />Nothing you don't.
+            Instant Feedback, Simplified.
           </h2>
+          <p className="text-[16px] leading-[1.8] text-[#64748b]">
+            Axepoll is a lightweight, real-time polling platform designed for speed. We believe feedback should be frictionless, anonymous when needed, and instantly visible. Built for teams that value agility and honest communication.
+          </p>
         </Reveal>
-
-        {/* Row 1 */}
-        <div className="grid grid-cols-12 gap-3.5 mt-14">
-          {/* Analytics */}
-          <BentoCard className="col-span-12 md:col-span-5" delay={0}>
-            <BentoIcon>📊</BentoIcon>
-            <BentoLabel>Live Analytics</BentoLabel>
-            <BentoTitle>Real-time response breakdown</BentoTitle>
-            <p className="text-[13px] leading-[1.7]" style={{ color: "#4d7a99" }}>
-              Option counts and participation rates update the moment someone submits.
-            </p>
-            <div className="mt-5 flex flex-col gap-2">
-              {MINI_BARS.map((b) => (
-                <div key={b.label} className="flex items-center gap-2.5">
-                  <span className="text-[11px] w-[72px] flex-shrink-0" style={{ color: "#4d7a99" }}>{b.label}</span>
-                  <div
-                    className="flex-1 h-1.5 rounded-full overflow-hidden"
-                    style={{ background: "rgba(0,180,255,0.07)" }}
-                  >
-                    <motion.div
-                      className="h-full rounded-full"
-                      style={{ background: "linear-gradient(90deg, #0ea5e9, #00c8ff)" }}
-                      initial={{ width: 0 }}
-                      whileInView={{ width: `${b.pct}%` }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 1, delay: 0.3 + MINI_BARS.indexOf(b) * 0.1, ease: [0.16,1,0.3,1] }}
-                    />
-                  </div>
-                  <span className="text-[11px] font-semibold w-7 text-right" style={{ color: "#00c8ff" }}>{b.pct}%</span>
-                </div>
-              ))}
-            </div>
-          </BentoCard>
-
-          {/* WebSockets */}
-          <BentoCard className="col-span-12 md:col-span-7" delay={0.1}>
-            <BentoIcon>⚡</BentoIcon>
-            <BentoLabel>WebSocket Sync</BentoLabel>
-            <BentoTitle>Your dashboard updates without refreshing</BentoTitle>
-            <p className="text-[13px] leading-[1.7]" style={{ color: "#4d7a99" }}>
-              Socket.io rooms keep every connected creator in sync the moment a response lands.
-            </p>
-            <WSPulse />
-          </BentoCard>
-        </div>
-
-        {/* Row 2 */}
-        <div className="grid grid-cols-12 gap-3.5 mt-3.5">
-          {/* Anonymous */}
-          <BentoCard className="col-span-12 md:col-span-4" delay={0.0}>
-            <BentoIcon>🔒</BentoIcon>
-            <BentoLabel>Response Mode</BentoLabel>
-            <BentoTitle>Anonymous or authenticated</BentoTitle>
-            <p className="text-[13px] leading-[1.7] mb-4" style={{ color: "#4d7a99" }}>You decide per poll.</p>
-            <div className="flex flex-col gap-2.5">
-              {[
-                { name: "Anonymous",     sub: "Identity hidden",  active: true  },
-                { name: "Authenticated", sub: "Login required",   active: false },
-              ].map((m) => (
-                <div
-                  key={m.name}
-                  className="flex items-center justify-between px-3.5 py-2.5 rounded-[9px]"
-                  style={{ background: m.active ? "rgba(0,200,255,0.06)" : "rgba(0,180,255,0.04)", border: `1px solid ${m.active ? "rgba(0,200,255,0.3)" : "rgba(0,180,255,0.1)"}` }}
-                >
-                  <div>
-                    <div className="text-[13px] font-semibold" style={{ color: "#d8edf8" }}>{m.name}</div>
-                    <div className="text-[11px] mt-0.5" style={{ color: "#4d7a99" }}>{m.sub}</div>
-                  </div>
-                  <div
-                    className="w-5 h-5 rounded-full flex items-center justify-center text-[11px]"
-                    style={m.active ? { background: "#00c8ff", color: "#020b14" } : { border: "1px solid #2a4f6a" }}
-                  >
-                    {m.active && "✓"}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </BentoCard>
-
-          {/* Expiry */}
-          <BentoCard className="col-span-12 md:col-span-4" delay={0.1}>
-            <BentoIcon>⏱</BentoIcon>
-            <BentoLabel>Poll Expiry</BentoLabel>
-            <BentoTitle>Auto-closes on schedule</BentoTitle>
-            <p className="text-[13px] leading-[1.7]" style={{ color: "#4d7a99" }}>
-              Set an expiry. Responses stop automatically.
-            </p>
-            <ExpiryCountdown />
-          </BentoCard>
-
-          {/* Publish */}
-          <BentoCard className="col-span-12 md:col-span-4" delay={0.2}>
-            <BentoIcon>📢</BentoIcon>
-            <BentoLabel>Publish Results</BentoLabel>
-            <BentoTitle>Share outcomes publicly</BentoTitle>
-            <p className="text-[13px] leading-[1.7]" style={{ color: "#4d7a99" }}>
-              One click makes final results visible to everyone on the same poll link — no extra URL needed.
-            </p>
-            <div
-              className="mt-5 flex items-center gap-2.5 px-4 py-3 rounded-[9px] text-[13px] font-semibold"
-              style={{ background: "rgba(0,200,255,0.07)", border: "1px solid rgba(0,200,255,0.2)", color: "#00c8ff" }}
-            >
-              <span>📤</span> Publish results now
-            </div>
-          </BentoCard>
-        </div>
       </div>
     </section>
   );
@@ -752,7 +625,7 @@ function CTA() {
     <section className="landing-rel py-28 text-center overflow-hidden">
       <div
         className="absolute pointer-events-none"
-        style={{ top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 700, height: 400, borderRadius: "50%", background: "radial-gradient(ellipse, rgba(0,180,255,0.07) 0%, transparent 70%)" }}
+        style={{ top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 700, height: 400, borderRadius: "50%", background: "radial-gradient(ellipse, rgba(56, 189, 248, 0.04) 0%, transparent 70%)" }}
       />
       <div className="max-w-[1100px] mx-auto px-12 relative z-10">
         <Reveal>
@@ -795,23 +668,18 @@ function Footer() {
       style={{ borderTop: "1px solid rgba(0,180,255,0.08)" }}
     >
       <div className="max-w-[1100px] mx-auto px-12 py-8 flex items-center justify-between flex-wrap gap-4">
-        <div
-          className="text-[16px] font-extrabold tracking-[-0.02em]"
-          style={{ fontFamily: "'Syne', sans-serif", color: "#e0f4ff" }}
-        >
-          Vox<span style={{ color: "#00c8ff" }}>ly</span>
+        <div className="flex items-center gap-2">
+          <img src="/logo.png" alt="Axepoll Logo" className="h-6 w-auto object-contain opacity-80 grayscale hover:grayscale-0 transition-all duration-300" />
+          <div
+            className="text-[16px] font-extrabold tracking-[-0.02em]"
+            style={{ fontFamily: "'Syne', sans-serif", color: "#e0f4ff" }}
+          >
+            Axe<span style={{ color: "#38bdf8" }}>poll</span>
+          </div>
         </div>
-        <div className="flex gap-6">
-          {["Privacy", "Terms", "GitHub", "Docs"].map((l) => (
-            <a key={l} href="#" className="text-[12px] transition-colors duration-200" style={{ color: "#4d7a99" }}
-              onMouseEnter={(e) => e.currentTarget.style.color = "#d8edf8"}
-              onMouseLeave={(e) => e.currentTarget.style.color = "#4d7a99"}
-            >
-              {l}
-            </a>
-          ))}
+        <div className="text-[12px]" style={{ color: "#4d7a99" }}>
+          Built by Axe
         </div>
-        <div className="text-[12px]" style={{ color: "#2a4f6a" }}>© 2025 Voxly. Built for hackathon.</div>
       </div>
     </footer>
   );
@@ -823,9 +691,8 @@ export default function Landing() {
     <div className="landing">
       <Navbar />
       <Hero />
-      <StatsBar />
       <HowItWorks />
-      <Features />
+      <About />
       <CTA />
       <Footer />
     </div>

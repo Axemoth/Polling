@@ -3,7 +3,8 @@ import { api } from '../context/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, BarChart, Users, Clock, ArrowRight, Trash2, Grid, Calendar, Share2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import { Plus, BarChart, Users, Clock, ArrowRight, Trash2, Grid, Calendar, Share2, Copy } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from "sonner";
@@ -132,14 +133,43 @@ const Dashboard = () => {
                     >
                       <Trash2 className="h-4.5 w-4.5" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-10 w-10 shrink-0 text-zinc-600 hover:text-cyan-400 hover:bg-cyan-500/10" 
-                      onClick={() => copyLink(poll.publicSlug)}
-                    >
-                      <Share2 className="h-4.5 w-4.5" />
-                    </Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-10 w-10 shrink-0 text-zinc-600 hover:text-cyan-400 hover:bg-cyan-500/10" 
+                        >
+                          <Share2 className="h-4.5 w-4.5" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="bg-zinc-950 border-white/10 sm:max-w-md">
+                        <DialogHeader>
+                          <DialogTitle className="text-white">Share Poll</DialogTitle>
+                          <DialogDescription className="text-zinc-400">
+                            Anyone with this link or QR code can vote.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="flex flex-col items-center justify-center py-6 gap-6">
+                          <div className="bg-white p-4 rounded-xl">
+                            <img 
+                              src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`${window.location.origin}/vote/${poll.publicSlug}`)}`}
+                              alt="QR Code"
+                              className="w-48 h-48"
+                            />
+                          </div>
+                          <div className="flex w-full items-center space-x-2">
+                            <div className="flex-1 bg-zinc-900 border border-zinc-800 text-zinc-300 p-3 rounded-lg text-sm truncate">
+                              {`${window.location.origin}/vote/${poll.publicSlug}`}
+                            </div>
+                            <Button onClick={() => copyLink(poll.publicSlug)} className="bg-cyan-600 hover:bg-cyan-700 text-white">
+                              <Copy className="h-4 w-4 mr-2" />
+                              Copy
+                            </Button>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                     <Link to={`/analytics/${poll.id}`} className="flex-1">
                       <Button className="w-full bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-white font-bold h-10 gap-2 group/btn">
                         View Analytics

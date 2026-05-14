@@ -93,7 +93,7 @@ const CreatePoll = () => {
 
       await api.post('/api/polls', payload);
       toast.success("Poll launched successfully!");
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       console.error(err);
       toast.error(err.response?.data?.error || "Failed to create poll");
@@ -117,7 +117,7 @@ const CreatePoll = () => {
             <p className="text-zinc-500 mt-2">Design your campaign and start collecting real-time insights.</p>
           </div>
           <div className="flex gap-3">
-            <Button type="button" variant="ghost" className="border-white/5 text-zinc-400 hover:text-white" onClick={() => navigate('/')}>
+            <Button type="button" variant="ghost" className="border-white/5 text-zinc-400 hover:text-white" onClick={() => navigate('/dashboard')}>
               Discard
             </Button>
             <Button type="submit" className="bg-cyan-600 font-bold text-white hover:bg-cyan-700 shadow-lg shadow-cyan-600/20 px-8 h-12" disabled={loading}>
