@@ -5,7 +5,7 @@ const AuthContext = createContext();
 
 // Create an axios instance with base configuration
 export const api = axios.create({
-  baseURL: 'http://localhost:4000',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:4000',
   withCredentials: true, // Crucial for sending/receiving cookies (sessions)
 });
 
