@@ -145,7 +145,6 @@ const Auth = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between ml-1">
                   <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Password</label>
-                  {isLogin && <button type="button" className="text-[10px] font-bold text-cyan-400 hover:text-cyan-300">Forgot?</button>}
                 </div>
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-zinc-600" />
