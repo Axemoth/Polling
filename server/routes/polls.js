@@ -119,6 +119,15 @@ router.get('/:slug', async (req, res) => {
 
     if (!fullPoll) return res.status(404).json({ error: 'Poll not found' });
 
+    const isExpired = fullPoll.expiresAt && new Date(fullPoll.expiresAt) < new Date();
+    const shouldShowResults = !fullPoll.isActive || fullPoll.isPublished || isExpired;
+
+    if (shouldShowResults) {
+      const { getPollAnalyticsData } = await import('../lib/analytics.js');
+      const results = await getPollAnalyticsData(fullPoll.id);
+      fullPoll.results = results;
+    }
+
     res.json(fullPoll);
   } catch (err) {
     console.error('Error fetching poll:', err);
@@ -130,7 +139,7 @@ router.get('/:slug', async (req, res) => {
 // 5. PUT /api/polls/:id - Edit poll metadata
 // ==========================================
 router.put('/:id', requireSession, requirePollOwner, async (req, res) => {
-  const { title, description, isAnonymous, isActive, expiresAt } = req.body;
+  const { title, description, isAnonymous, isActive, isPublished, expiresAt } = req.body;
   
   try {
     const [updated] = await db.update(polls)
@@ -138,7 +147,8 @@ router.put('/:id', requireSession, requirePollOwner, async (req, res) => {
         title, 
         description, 
         isAnonymous, 
-        isActive, 
+        isActive,
+        isPublished,
         expiresAt: expiresAt ? new Date(expiresAt) : null 
       })
       .where(eq(polls.id, req.params.id))

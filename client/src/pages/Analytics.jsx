@@ -17,6 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
 import { BarChart, PieChart } from "@/components/evilcharts/charts";
@@ -212,7 +213,30 @@ const Analytics = () => {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2 hidden sm:flex">
+              <span className="text-sm font-medium text-zinc-400">Public Results</span>
+              <Switch 
+                checked={poll.isPublished} 
+                onCheckedChange={async (checked) => {
+                  try {
+                    await api.put(`/api/polls/${id}`, {
+                      title: poll.title,
+                      description: poll.description,
+                      isAnonymous: poll.isAnonymous,
+                      isActive: poll.isActive,
+                      expiresAt: poll.expiresAt,
+                      isPublished: checked
+                    });
+                    setPoll(prev => ({ ...prev, isPublished: checked }));
+                    toast.success(checked ? "Results are now public!" : "Results hidden.");
+                  } catch (err) {
+                    toast.error("Failed to update publish settings");
+                  }
+                }} 
+                className="data-[state=checked]:bg-cyan-500"
+              />
+            </div>
             <Dialog>
               <DialogTrigger asChild>
                 <Button

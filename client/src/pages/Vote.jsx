@@ -157,6 +157,9 @@ const Vote = () => {
     </div>
   );
 
+  const isResultsMode = !!poll.results;
+  const data = poll.results;
+
   return (
     <div className="min-h-[calc(100vh-64px)] bg-[#060608] pb-20 pt-12">
       <div className="mx-auto max-w-[680px] px-4 sm:px-6">
@@ -165,7 +168,7 @@ const Vote = () => {
         <div className="mb-12 text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-cyan-400 mb-6">
             <Zap className="h-3 w-3" />
-            Live Campaign
+            {isResultsMode ? "Final Results" : "Live Campaign"}
           </div>
           <h1 className="text-4xl font-black tracking-tighter text-white mb-4 sm:text-5xl">
             {poll.title}
@@ -177,11 +180,11 @@ const Vote = () => {
           <div className="mt-8 flex items-center justify-center gap-6 text-[10px] font-bold uppercase tracking-widest text-zinc-600">
             <div className="flex items-center gap-1.5">
               <UserIcon className="h-3 w-3" />
-              {poll.isAnonymous ? "No sign-in required" : "Verified accounts only"}
+              {poll.isAnonymous ? "Anonymous" : "Verified voters"}
             </div>
             <div className="flex items-center gap-1.5">
               <Clock className="h-3 w-3" />
-              {poll.expiresAt ? "Expiring Soon" : "Open Ended"}
+              {isResultsMode ? "Closed" : (poll.expiresAt ? "Expiring Soon" : "Open Ended")}
             </div>
             <div className="flex items-center gap-1.5 text-cyan-500">
               <ShieldCheck className="h-3 w-3" />
@@ -207,56 +210,97 @@ const Vote = () => {
               </div>
 
               <div className="grid gap-3">
-                {q.options.map((option) => (
-                  <button
-                    key={option.id}
-                    onClick={() => handleSelection(q.id, option.id)}
-                    className={`relative flex items-center justify-between overflow-hidden rounded-2xl border px-6 py-5 text-left transition-all duration-300 ${
-                      selections[q.id] === option.id 
-                        ? 'border-cyan-500/50 bg-cyan-500/5 ring-1 ring-cyan-500/30' 
-                        : 'border-white/5 bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/10'
-                    }`}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className={`flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all ${
-                        selections[q.id] === option.id 
-                          ? 'border-cyan-500 bg-cyan-500 text-white scale-110' 
-                          : 'border-zinc-800 bg-transparent'
-                      }`}>
-                        {selections[q.id] === option.id && <CheckCircle2 className="h-4 w-4" />}
-                      </div>
-                      <span className={`font-medium transition-colors ${selections[q.id] === option.id ? 'text-white' : 'text-zinc-400'}`}>
-                        {option.text}
-                      </span>
-                    </div>
-                    
-                    {selections[q.id] === option.id && (
-                      <motion.div 
-                        layoutId={`sparkle-${q.id}`}
-                        className="absolute right-[-20px] top-[-20px] h-20 w-20 bg-cyan-600/10 blur-xl pointer-events-none" 
+                {q.options.map((option) => {
+                  let percentage = 0;
+                  let votes = 0;
+                  
+                  if (isResultsMode) {
+                    const questionTotals = data?.participation?.answerTotalsByQuestion?.find(t => t.questionId === q.id)?.answerCount || 0;
+                    const countObj = data?.optionCounts?.find(oc => oc.optionId === option.id);
+                    votes = countObj ? countObj.count : 0;
+                    percentage = questionTotals > 0 ? Math.round((votes / questionTotals) * 100) : 0;
+                  }
+
+                  return isResultsMode ? (
+                    <div key={option.id} className="relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] px-6 py-5">
+                      <div 
+                        className="absolute inset-0 bg-cyan-500/20" 
+                        style={{ width: `${percentage}%`, transition: 'width 1s ease-in-out' }} 
                       />
-                    )}
-                  </button>
-                ))}
+                      <div className="relative flex items-center justify-between z-10">
+                        <span className="font-medium text-white">{option.text}</span>
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm font-bold text-cyan-400">{percentage}%</span>
+                          <span className="text-xs text-zinc-500 hidden sm:inline">{votes} votes</span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      key={option.id}
+                      onClick={() => handleSelection(q.id, option.id)}
+                      className={`relative flex items-center justify-between overflow-hidden rounded-2xl border px-6 py-5 text-left transition-all duration-300 ${
+                        selections[q.id] === option.id 
+                          ? 'border-cyan-500/50 bg-cyan-500/5 ring-1 ring-cyan-500/30' 
+                          : 'border-white/5 bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/10'
+                      }`}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className={`flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all ${
+                          selections[q.id] === option.id 
+                            ? 'border-cyan-500 bg-cyan-500 text-white scale-110' 
+                            : 'border-zinc-800 bg-transparent'
+                        }`}>
+                          {selections[q.id] === option.id && <CheckCircle2 className="h-4 w-4" />}
+                        </div>
+                        <span className={`font-medium transition-colors ${selections[q.id] === option.id ? 'text-white' : 'text-zinc-400'}`}>
+                          {option.text}
+                        </span>
+                      </div>
+                      
+                      {selections[q.id] === option.id && (
+                        <motion.div 
+                          layoutId={`sparkle-${q.id}`}
+                          className="absolute right-[-20px] top-[-20px] h-20 w-20 bg-cyan-600/10 blur-xl pointer-events-none" 
+                        />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* SUBMIT BUTTON */}
-        <div className="mt-16 pt-8 border-t border-white/5">
-          <Button 
-            onClick={handleSubmit} 
-            disabled={submitting}
-            className="w-full bg-cyan-600 hover:bg-cyan-700 h-14 text-lg font-black shadow-xl shadow-cyan-600/30 gap-3 group"
-          >
-            {submitting ? "Transmitting..." : "Submit Response"}
-            <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-          </Button>
-          <p className="mt-6 text-center text-[10px] font-bold uppercase tracking-widest text-zinc-600">
-            Responses are permanently encrypted and irreversible.
-          </p>
-        </div>
+        {/* SUBMIT BUTTON OR RESULTS FOOTER */}
+        {!isResultsMode ? (
+          <div className="mt-16 pt-8 border-t border-white/5">
+            <Button 
+              onClick={handleSubmit} 
+              disabled={submitting}
+              className="w-full bg-cyan-600 hover:bg-cyan-700 h-14 text-lg font-black shadow-xl shadow-cyan-600/30 gap-3 group"
+            >
+              {submitting ? "Transmitting..." : "Submit Response"}
+              <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
+            <p className="mt-6 text-center text-[10px] font-bold uppercase tracking-widest text-zinc-600">
+              Responses are permanently encrypted and irreversible.
+            </p>
+          </div>
+        ) : (
+          <div className="mt-16 pt-8 border-t border-white/5 flex flex-col items-center">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500 ring-1 ring-emerald-500/20">
+              <CheckCircle2 className="h-8 w-8" />
+            </div>
+            <h3 className="text-2xl font-black text-white">This poll has concluded</h3>
+            <p className="mt-2 text-zinc-500">Thank you to everyone who participated.</p>
+            <div className="mt-8">
+              <Button onClick={() => navigate('/')} variant="outline" className="border-zinc-800 text-zinc-400 w-48 h-12">
+                Create Your Own
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
