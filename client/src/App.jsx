@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import CreatePoll from './pages/CreatePoll';
 import Analytics from './pages/Analytics';
 import Vote from './pages/Vote';
+import { Analytics as VercelAnalytics } from '@vercel/analytics/react';
 
 import Landing from './pages/Landing';
 
@@ -59,6 +60,7 @@ function App() {
           {/* We will add more routes here one by one */}
         </Routes>
       </div>
+      <VercelAnalytics />
     </Router>
   );
 }
