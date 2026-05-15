@@ -97,6 +97,46 @@ npm run dev
 
 Visit `http://localhost:5173` in your browser to access Axepoll!
 
+## 🏗️ Architecture & Security
+
+- **Privacy-First Responses**: The database separates user identities (`responses` table) from actual answers (`answers` table). Anonymous polls leave the `respondentId` completely null, ensuring true anonymity.
+- **Automated Lifecycle**: Background cron jobs (`node-cron`) automatically sweep the database every minute to close expired polls, simultaneously firing Socket.io events to instantly lock out late voters on the frontend.
+- **Secure Authentication**: Utilizes `express-session` with `connect-pg-simple` to store sessions in the database, with strict Cross-Origin cookie configurations (`SameSite=None`, `Secure=true`) for modern frontend-backend decoupling.
+
+## 🚀 Deployment (Production)
+
+This project is configured for a decoupled production environment:
+
+1. **Frontend (Vercel)**
+   - Add the environment variable: `VITE_API_URL=https://your-backend-url.com`
+   - Set the Root Directory to `client/` in Vercel.
+   - The included `client/vercel.json` ensures React Router handles deep linking without throwing 404 errors.
+
+2. **Backend (Azure App Service / Render / Heroku)**
+   - Must set `NODE_ENV=production` to enable secure cookies.
+   - Set `CLIENT_URL=https://your-frontend-url.com` to resolve CORS policies.
+   - Provide your cloud PostgreSQL URL (e.g., Neon or Supabase) as `DB_URL`.
+   - Update `GOOGLE_REDIRECT_URI` in Google Cloud Console to match your production backend URL.
+
+Deployments are automated via GitHub Actions (`.github/workflows/main_axepoll.yml`).
+
+## 📁 Project Structure
+
+```text
+Poll-platform/
+├── client/                 # React Frontend
+│   ├── src/
+│   │   ├── components/     # UI Components (Charts, Nav, etc.)
+│   │   ├── context/        # React Context (Auth State, Axios Instance)
+│   │   └── pages/          # Views (Dashboard, Analytics, Vote, etc.)
+│   └── vercel.json         # React Router rewrite rules
+└── server/                 # Node.js/Express Backend
+    ├── db/                 # Drizzle Schema & Connection
+    ├── jobs/               # Cron Jobs (Expiry sweeps)
+    ├── lib/                # Socket.io & OIDC Init
+    └── routes/             # REST API & Auth routes
+```
+
 ## 📄 License & Credits
 
 Built by Axe. All rights reserved.
